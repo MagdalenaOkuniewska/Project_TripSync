@@ -16,8 +16,6 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
-# Application definition
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -29,6 +27,8 @@ INSTALLED_APPS = [
 
 INSTALLED_EXTENSIONS = [
     'dashboard.apps.DashboardConfig',
+    'users.apps.UsersConfig',
+    'trips.apps.TripConfig',
 
 ]
 
@@ -125,3 +125,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+AUTH_USER_MODEL = "users.CustomUser"
