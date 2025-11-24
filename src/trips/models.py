@@ -10,3 +10,4 @@ class Trip(models.Model):
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE) # TODO logika przy zapisie, że ustawia zalogowane użytkowniak jako owern'a.
+

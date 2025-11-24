@@ -1,0 +1,35 @@
+<nav class="navbar navbar-expand-lg navbar-dark fixed-top" id="mainNav">
+            <div class="container">
+                <a class="navbar-brand" href="{% url 'home' %}">
+                    <em style="font-size: 1.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif;">
+        T<span style="text-transform: lowercase;">rip</span>S<span style="text-transform: lowercase;">ync</span>
+    </em></a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+                    Menu
+                    <i class="fas fa-bars ms-1"></i>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+                        <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
+
+                        {% if user.is_authenticated %}
+                            <li class="nav-item"><a class="nav-link" href="#profile">Profile</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#trips-list">My Trips</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#trips-create">Create Trip</a></li>
+
+                            <li class="nav-item">
+                                <form method="post" action="#logout" style="display: inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" class="nav-link btn btn-link text-uppercase" style="color: #ffc800;">
+                                    Logout
+                                     </button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item"><a class="nav-link" href="#login">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#register">Register</a></li>
+                {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </nav>
