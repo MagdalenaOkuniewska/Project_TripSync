@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
 
 User = get_user_model()
 
@@ -10,4 +11,16 @@ class Trip(models.Model):
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE) # TODO logika przy zapisie, że ustawia zalogowane użytkowniak jako owern'a.
+
+    def validate_dates(self):
+        if self.start_date and self.end_date:
+            if self.start_date < self.end_date:
+                raise ValidationError('Start date must be before end date')
+
+    def save(self, *args, **kwargs):
+        self.validate_dates()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f'{self.title} - {self.destination}'
 
