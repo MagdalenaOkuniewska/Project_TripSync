@@ -15,7 +15,7 @@ class Trip(models.Model):
 
     def validate_dates(self):
         if self.start_date and self.end_date:
-            if self.start_date < self.end_date:
+            if self.start_date > self.end_date:
                 raise ValidationError('Start date must be before end date')
 
     def save(self, *args, **kwargs):
