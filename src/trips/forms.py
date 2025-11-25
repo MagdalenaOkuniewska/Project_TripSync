@@ -5,4 +5,4 @@ class TripForm(forms.ModelForm): #robie jeden, bo te same pola beda przy update,
     class Meta:
         model = Trip
         fields = ['title', 'destination', 'start_date', 'end_date']
-        #owner-> w widoku, participants-> osobno?, created/updated->automatycznie
+        #owner=automatycznie->ustawić w widoku, participants-> osobno?, created/updated->automatycznie

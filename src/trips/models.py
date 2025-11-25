@@ -10,6 +10,7 @@ class Trip(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
+    participants = models.ManyToManyField(User, on_delete=models.CASCADE)
     owner = models.ForeignKey(User, on_delete=models.CASCADE) # TODO logika przy zapisie, że ustawia zalogowane użytkowniak jako owern'a.
 
     def validate_dates(self):
@@ -20,6 +21,12 @@ class Trip(models.Model):
     def save(self, *args, **kwargs):
         self.validate_dates()
         super().save(*args, **kwargs)
+
+    def is_owner(self, user):
+        return self.owner == user
+
+    def is_participant(self, user):
+        return self.participants.filter(id=user.id).exists()
 
     def __str__(self):
         return f'{self.title} - {self.destination}'
