@@ -10,7 +10,7 @@ class Trip(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
-    participants = models.ManyToManyField(User, on_delete=models.CASCADE)
+    participants = models.ManyToManyField(User, related_name='trips', blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE) # TODO logika przy zapisie, że ustawia zalogowane użytkowniak jako owern'a.
 
     def validate_dates(self):
