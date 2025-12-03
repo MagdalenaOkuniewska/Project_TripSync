@@ -13,12 +13,12 @@
                         <li class="nav-item"><a class="nav-link" href="#features">Features</a></li>
 
                         {% if user.is_authenticated %}
-                            <li class="nav-item"><a class="nav-link" href="#profile">Profile</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{%url 'profile' %}">Profile</a></li>
                             <li class="nav-item"><a class="nav-link" href="#trips-list">My Trips</a></li>
                             <li class="nav-item"><a class="nav-link" href="#trips-create">Create Trip</a></li>
 
                             <li class="nav-item">
-                                <form method="post" action="#logout" style="display: inline;">
+                                <form method="post" action="{%url 'logout' %}" style="display: inline;">
                                     {% csrf_token %}
                                     <button type="submit" class="nav-link btn btn-link text-uppercase" style="color: #ffc800;">
                                     Logout
@@ -26,8 +26,8 @@
                         </form>
                     </li>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="#login">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#register">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{%url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{%url 'register' %}">Register</a></li>
                 {% endif %}
                     </ul>
                 </div>
