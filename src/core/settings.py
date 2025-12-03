@@ -29,6 +29,8 @@ INSTALLED_EXTENSIONS = [
     'dashboard.apps.DashboardConfig',
     'users.apps.UsersConfig',
     'trips.apps.TripConfig',
+    'crispy_forms',
+    'crispy_bootstrap4',
 
 ]
 
@@ -127,3 +129,5 @@ MEDIA_ROOT = BASE_DIR / 'media'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = "users.CustomUser"
+
+CRISPY_TEMPLATE_PACK ='bootstrap4'
