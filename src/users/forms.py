@@ -7,9 +7,9 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = CustomUser
         fields = ['username', 'email', 'password1', 'password2']
-        
+
 class UserUpdateForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
+    email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'readonly': 'readonly'}) )
     class Meta:
         model = CustomUser
         fields = ['username', 'email']
