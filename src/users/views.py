@@ -1,38 +1,34 @@
-from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UserRegistrationForm, UserUpdateForm, ProfileUpdateForm
-from django.contrib.auth.decorators import login_required
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView
+from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import UserRegistrationForm, UserUpdateForm
+from .models import CustomUser
 
+class RegistrationView(CreateView):
+    model = CustomUser
+    form_class = UserRegistrationForm
+    template_name = 'users/register.html'
+    success_url = reverse_lazy('login')
 
-def register(request):
-    if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
+    def form_valid(self, form):
+        user = form.save()
+        username = form.cleaned_data.get('username')
+        messages.success(self.request, f'Account created for {username}')
+        return super().form_valid(form)
 
-        if form.is_valid():
-            user = form.save()
-            username = form.cleaned_data.get('username')
-            messages.success(request, f'Account created for {username}')
-            return redirect('login')
-    else:
-        form = UserRegistrationForm()
-    return render(request, 'users/register.html', {'form': form})
+class ProfileView(LoginRequiredMixin, UpdateView):
+    model = CustomUser
+    form_class = UserUpdateForm
+    template_name = 'users/profile.html'
+    success_url = reverse_lazy('profile')
 
-@login_required
-def profile(request):
-    if request.method == 'POST':
-        user_form = UserUpdateForm(request.POST, instance=request.user)
-        profile_form = ProfileUpdateForm(request.POST, request.FILES, instance=request.user)
+    def get_object(self, queryset=None):
+        return self.request.user
 
-        if user_form.is_valid() and profile_form.is_valid():
-            user_form.save()
-            profile_form.save()
-            messages.success(request, f'Your account has been updated!')
-            return redirect('profile')
-    else:
-        user_form = UserUpdateForm(instance=request.user)
-        profile_form = ProfileUpdateForm(instance=request.user)
-    return render(request, 'users/profile.html', {'user_form': user_form, 'profile_form': profile_form})
-
+    def form_valid(self, form):
+        messages.success(self.request, f'Your account has been updated!')
+        return super().form_valid(form)
 
 
 

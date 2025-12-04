@@ -12,9 +12,4 @@ class UserUpdateForm(forms.ModelForm):
     email = forms.EmailField(required=True, widget=forms.EmailInput(attrs={'readonly': 'readonly'}) )
     class Meta:
         model = CustomUser
-        fields = ['username', 'email']
-
-class ProfileUpdateForm(forms.ModelForm):
-    class Meta:
-        model = CustomUser
-        fields = ['first_name', 'last_name', 'avatar']
+        fields = ['username', 'email', 'first_name', 'last_name', 'avatar']

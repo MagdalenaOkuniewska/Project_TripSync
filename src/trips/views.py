@@ -1,7 +1,6 @@
 from django.contrib import messages
 from django.template.context_processors import request
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
 from django.db.models import Q
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -43,7 +42,7 @@ class TripCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         """Sets up logged-in User as an Owner adn saves it to db"""
         form.instance.owner = self.request.user
-        messages.success(self.request, f'Your trip "{form.instance.title}"has been created.')
+        messages.success(self.request, f'Your trip "{form.instance.title}" has been created.')
         return super().form_valid(form)
 
 class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
