@@ -4,8 +4,8 @@
 {% block content %}
 <div class="content-section">
     <div class="media">
-        {% if user.profile.image %}
-            <img class="rounded-circle account-img" src="{{ user.profile.image.url }}">
+        {% if user.avatar %}
+            <img class="rounded-circle account-img" src="{{ user.avatar.url }}">
         {% else %}
             <img class="rounded-circle account-img" src="{{ MEDIA_URL }}default.jpg">
         {% endif %}
@@ -13,13 +13,13 @@
         <div class="media-body">
             <h2 class="account-heading">{{ user.username }}</h2>
             <p class="text-secondary">{{ user.email }}</p>
+            <p class="text-muted small">Member since {{ user.date_joined|date:"F Y" }}</p>
         </div>
          <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">Profile info</legend>
-            {{ user_form|crispy }}
-            {{ profile_form|crispy }}
+            {{ form|crispy }}
         </fieldset>
         <div class="form-group">
             <button class="btn btn-outline-info" type="submit">Update</button>
