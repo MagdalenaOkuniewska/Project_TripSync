@@ -18,7 +18,7 @@ class TripListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Trips where User is on Owner OR a Participant"""
         user = self.request.user
-        return Trip.objects.filter(Q(owner=user) | Q(participants=user).distinct())
+        return Trip.objects.filter(Q(owner=user) | Q(participants=user)).distinct()
 
 class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Trip
