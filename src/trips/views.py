@@ -8,7 +8,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Trip
 from .forms import TripForm
 
-## TODO logika przy zapisie Create, że ustawia zalogowane użytkowniak jako owern'a.
 
 class TripListView(LoginRequiredMixin, ListView):
     model = Trip
