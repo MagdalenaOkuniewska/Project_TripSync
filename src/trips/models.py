@@ -31,3 +31,15 @@ class Trip(models.Model):
     def __str__(self):
         return f'{self.title} - {self.destination}'
 
+class TripMember(models.Model):
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='members')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_member')
+    role = models.CharField(max_length=50, null=True, blank=True)
+    joined_at = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=30, blank=True)
+
+    class Meta:
+        ordering = ['-joined_at']
+
+    def __str__(self):
+        return f'{self.user} - {self.trip}'
