@@ -1,1 +1,88 @@
 {% extends 'dashboard/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}{{ trip.title }} - TripSync{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 900px; margin: 0 auto;">
+
+    <!-- Trip Header -->
+    <div class="card shadow mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <h2 class="text-uppercase mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                        {{ trip.title }}
+                    </h2>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-map-marker-alt"></i> {{ trip.destination }}
+                    </p>
+                    <p class="text-muted mb-2">
+                        <i class="fas fa-calendar"></i>
+                        {{ trip.start_date|date:"M d, Y" }} - {{ trip.end_date|date:"M d, Y" }}
+                    </p>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-user"></i>
+                        Organized by {{ trip.owner.username }}
+                    </p>
+                </div>
+
+                {% if trip.owner == user %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'trip-update' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'trip-delete' trip.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Members -->
+    <div class="card shadow mb-4">
+        <div class="card-body p-4">
+            <h4 class="text-uppercase mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-users"></i> Members ({{ trip.members.count }})
+            </h4>
+
+            {% if trip.members.exists %}
+                <div class="list-group">
+                    {% for member in trip.members.all %}
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <strong>{{ member.user.username }}</strong>
+                                {% if member.role == 'owner' %}
+                                    <span class="badge bg-primary ms-2">Owner</span>
+                                {% endif %}
+                                <small class="text-muted d-block">
+                                    Joined {{ member.joined_at|date:"M d, Y" }}
+                                </small>
+                            </div>
+                            <span class="badge" style="background-color: {% if member.status == 'active' %}#28a745{% elif member.status == 'pending' %}#ffc107{% else %}#dc3545{% endif %};">
+                                {{ member.get_status_display }}
+                            </span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">No members yet.</p>
+            {% endif %}
+
+            {% if trip.owner == user %}
+                <button class="btn btn-sm btn-outline-primary mt-3">
+                    <i class="fas fa-user-plus"></i> Invite Members
+                </button>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="{% url 'trip-list' %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Trips
+    </a>
+</div>
+{% endblock %}

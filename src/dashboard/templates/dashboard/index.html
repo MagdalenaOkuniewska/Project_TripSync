@@ -27,9 +27,9 @@
                 <div class="masthead-heading text-uppercase">TripSync</div>
 
                 {% if user.is_authenticated %}
-                    <a class="btn btn-primary btn-xl text-uppercase" href="#trip-create">Create New Trip</a>
+                    <a class="btn btn-primary btn-xl text-uppercase" href="{% url 'trip-create'%}">Create New Trip</a>
                 {% else %}
-                    <a class="btn btn-primary btn-xl text-uppercase" href="#register">Get Started</a>
+                    <a class="btn btn-primary btn-xl text-uppercase" href="{% url 'register'%}">Get Started</a>
                 {% endif %}
 
 
