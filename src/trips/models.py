@@ -11,7 +11,7 @@ class Trip(models.Model):
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
     participants = models.ManyToManyField(User, related_name='trips', blank=True)
-    owner = models.ForeignKey(User, on_delete=models.CASCADE)
+    owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_trips')
 
     def validate_dates(self):
         if self.start_date and self.end_date:
