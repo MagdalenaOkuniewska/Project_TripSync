@@ -1,3 +1,5 @@
+from random import choice
+
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -27,19 +29,32 @@ class Trip(models.Model):
 
     def is_participant(self, user):
         return self.participants.filter(id=user.id).exists()
+    #TripMember.objects.filter(trip=self, user=user).exists()
 
     def __str__(self):
         return f'{self.title} - {self.destination}'
 
 class TripMember(models.Model):
+    ROLE_CHOICES = [('owner', 'Owner'),
+                    ('member', 'Member')]
+
+    STATUS_CHOICES = [('active', 'Active'),
+                      ('pending', 'Pending'),
+                      ('declined', 'Declined')]
+
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='members')
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_member')
-    role = models.CharField(max_length=50, null=True, blank=True)
+    role = models.CharField(max_length=50, choices= ROLE_CHOICES, default='member', null=True, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=30, blank=True)
+    status = models.CharField(max_length=30, choices= ROLE_CHOICES, default='member', blank=True)
 
     class Meta:
         ordering = ['-joined_at']
 
+    def save(self, *args, **kwargs):
+        if self.user == self.trip.owner:
+            self.role = 'owner'
+        super().save(*args, **kwargs)
+
     def __str__(self):
-        return f'{self.user} - {self.trip}'
+        return f'{self.user.username} - {self.trip.title}'
