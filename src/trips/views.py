@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.template.context_processors import request
 from django.shortcuts import redirect
 from django.db.models import Q
+from django.urls import reverse_lazy
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Trip
@@ -39,6 +40,10 @@ class TripCreateView(LoginRequiredMixin, CreateView):
     form_class = TripForm
     template_name = 'trips/trip_create.html'
 
+    def get_success_url(self):
+        """Redirect to details of created trip"""
+        return reverse_lazy('trip-detail', kwargs={'pk': self.object.pk})
+
     def form_valid(self, form):
         """Sets up logged-in User as an Owner adn saves it to db"""
         form.instance.owner = self.request.user
@@ -49,6 +54,10 @@ class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Trip
     form_class = TripForm
     template_name = 'trips/trip_create.html'
+
+    def get_success_url(self):
+        """Redirect to details of created trip"""
+        return reverse_lazy('trip-detail', kwargs={'pk': self.object.pk})
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
@@ -67,6 +76,7 @@ class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 class TripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Trip
     template_name = 'trips/trip_delete.html'
+    success_url = reverse_lazy('trip-list')
 
     def test_func(self):
         trip = self.get_object()
@@ -74,8 +84,9 @@ class TripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def handle_no_permission(self):
         messages.error(self.request, 'Only the Trip Owner can delete this Trip.')
+        return redirect('trip-list')
 
     def delete(self, request, *args, **kwargs):
         trip = self.get_object()
-        messages.success(self.request, f'Trip "{trip.instance.title}" deleted successfully.')
+        messages.success(self.request, 'Trip has been deleted successfully.')
         return super().delete(request, *args, **kwargs)

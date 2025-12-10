@@ -1,1 +1,49 @@
 {% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}Edit Trip{% else %}Create Trip{% endif %} - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-body p-5">
+                    <h2 class="text-center text-uppercase mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                        {% if form.instance.pk %}Edit Trip{% else %}Create New Trip{% endif %}
+                    </h2>
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            {{ form|crispy }}
+                        </fieldset>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" style="background-color: rgba(63,106,71,0.74); color: white; border: none; padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase; flex: 1;">
+                                {% if form.instance.pk %}Update Trip{% else %}Create Trip{% endif %}
+                            </button>
+                            <a href="{% url 'trip-list' %}" class="btn btn-outline-secondary" style="padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                                Cancel
+                            </a>
+                        </div>
+                    </form>
+
+                    <!-- DELETE BUTTON (tylko przy edit!) -->
+                    {% if form.instance.pk %}
+                        <hr class="my-4">
+                        <div class="text-center">
+                            <p class="text-muted mb-3">
+                                <small>Want to delete this trip permanently?</small>
+                            </p>
+                            <a href="{% url 'trip-delete' form.instance.pk %}" class="btn btn-outline-danger" style="padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                                <i class="fas fa-trash"></i> Delete Trip
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
