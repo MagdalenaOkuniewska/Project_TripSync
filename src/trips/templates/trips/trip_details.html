@@ -5,7 +5,8 @@
 {% block title %}{{ trip.title }} - TripSync{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
+<div class="container" style="max-width: 900px; margin: 0 auto;">
+
     <!-- Trip Header -->
     <div class="card shadow mb-4">
         <div class="card-body p-4">
@@ -21,13 +22,13 @@
                         <i class="fas fa-calendar"></i>
                         {{ trip.start_date|date:"M d, Y" }} - {{ trip.end_date|date:"M d, Y" }}
                     </p>
-                    <p class="text-muted">
+                    <p class="text-muted mb-0">
                         <i class="fas fa-user"></i>
                         Organized by {{ trip.owner.username }}
                     </p>
                 </div>
 
-                {% if trip.is_owner == user %}
+                {% if trip.owner == user %}
                     <div class="d-flex gap-2">
                         <a href="{% url 'trip-update' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
                             <i class="fas fa-edit"></i> Edit
@@ -51,7 +52,7 @@
             {% if trip.members.exists %}
                 <div class="list-group">
                     {% for member in trip.members.all %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center">
+                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
                             <div>
                                 <strong>{{ member.user.username }}</strong>
                                 {% if member.role == 'owner' %}
@@ -68,10 +69,10 @@
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-muted">No members yet.</p>
+                <p class="text-muted mb-0">No members yet.</p>
             {% endif %}
 
-            {% if trip.is_owner == user %}
+            {% if trip.owner == user %}
                 <button class="btn btn-sm btn-outline-primary mt-3">
                     <i class="fas fa-user-plus"></i> Invite Members
                 </button>
