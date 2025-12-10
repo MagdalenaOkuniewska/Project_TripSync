@@ -43,10 +43,10 @@ class TripMember(models.Model):
                       ('declined', 'Declined')]
 
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='members')
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_member')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_memberships')
     role = models.CharField(max_length=50, choices= ROLE_CHOICES, default='member', null=True, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=30, choices= ROLE_CHOICES, default='member', blank=True)
+    status = models.CharField(max_length=30, choices= STATUS_CHOICES, default='member', blank=True)
 
     class Meta:
         ordering = ['-joined_at']
