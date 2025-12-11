@@ -9,6 +9,11 @@
                 <legend class="border-bottom mb-4">Log In!</legend>
                 {{ form|crispy }}
             </fieldset>
+
+            <small class="text-muted mb-3 d-block text-center">
+                <a href="{% url 'password_reset' %}">Forgot your password?</a>
+            </small>
+
             <div class="form-group">
                 <button class="btn btn-outline-info" type="submit">Login</button>
             </div>

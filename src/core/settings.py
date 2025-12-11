@@ -1,5 +1,11 @@
 from pathlib import Path
 
+import os
+os.environ['HOSTNAME'] = 'localhost'
+
+import django.core.mail.utils
+django.core.mail.utils.DNS_NAME = 'localhost'
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -13,7 +19,7 @@ SECRET_KEY = 'django-insecure-rn$&l110&6sl(%q-b8cv)ivk0ed3jhc*y+!ap4pah$#a8wb886
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 INSTALLED_APPS = [
@@ -135,3 +141,8 @@ CRISPY_TEMPLATE_PACK ='bootstrap4'
 LOGIN_URL = 'login'
 LOGIN_REDIRECT_URL = 'profile'
 LOGOUT_REDIRECT_URL = 'home'
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+DEFAULT_FROM_EMAIL = 'noreply@tripsync.com'
+SERVER_EMAIL = 'noreply@tripsync.com'
