@@ -18,7 +18,7 @@ class TripListView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         """Trips where User is on Owner OR a Participant"""
         user = self.request.user
-        return Trip.objects.filter(Q(owner=user) | Q(participants=user)).distinct()
+        return Trip.objects.filter(Q(owner=user) | Q(members__user=user)).distinct()
 
 class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Trip
@@ -78,6 +78,10 @@ class TripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     template_name = 'trips/trip_delete.html'
     success_url = reverse_lazy('trip-list')
 
+    def get_success_url(self):
+        messages.success(self.request, 'Trip has been deleted successfully.')
+        return super().get_success_url()
+
     def test_func(self):
         trip = self.get_object()
         return trip.is_owner(self.request.user)
@@ -86,7 +90,3 @@ class TripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         messages.error(self.request, 'Only the Trip Owner can delete this Trip.')
         return redirect('trip-list')
 
-    def delete(self, request, *args, **kwargs):
-        trip = self.get_object()
-        messages.success(self.request, 'Trip has been deleted successfully.')
-        return super().delete(request, *args, **kwargs)

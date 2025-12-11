@@ -7,4 +7,4 @@ class TripAdmin(admin.ModelAdmin):
 
 @admin.register(TripMember)
 class TripAdmin(admin.ModelAdmin):
-    list_display = ('id', 'trip', 'user', 'role', 'status', 'joined_at')
+    list_display = ('id', 'trip', 'user', 'role', 'joined_at')

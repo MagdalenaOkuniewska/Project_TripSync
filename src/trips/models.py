@@ -12,7 +12,6 @@ class Trip(models.Model):
     start_date = models.DateField()
     end_date = models.DateField()
     created_at = models.DateTimeField(auto_now_add=True)
-    participants = models.ManyToManyField(User, related_name='trips', blank=True)
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='owned_trips')
 
     def validate_dates(self):
@@ -28,8 +27,7 @@ class Trip(models.Model):
         return self.owner == user
 
     def is_participant(self, user):
-        return self.participants.filter(id=user.id).exists()
-    #TripMember.objects.filter(trip=self, user=user).exists()
+        self.members.filter(user=user).exists()
 
     def __str__(self):
         return f'{self.title} - {self.destination}'
@@ -38,18 +36,19 @@ class TripMember(models.Model):
     ROLE_CHOICES = [('owner', 'Owner'),
                     ('member', 'Member')]
 
-    STATUS_CHOICES = [('active', 'Active'),
-                      ('pending', 'Pending'),
-                      ('declined', 'Declined')]
+    # STATUS_CHOICES = [('active', 'Active'),
+    #                   ('pending', 'Pending'),
+    #                   ('declined', 'Declined')]
 
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='members')
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='members') # trip.members.all()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_memberships')
     role = models.CharField(max_length=50, choices= ROLE_CHOICES, default='member', null=True, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=30, choices= STATUS_CHOICES, default='member', blank=True)
+    # status = models.CharField(max_length=30, choices= STATUS_CHOICES, default='member', blank=True)
 
     class Meta:
         ordering = ['-joined_at']
+        unique_together = [('trip', 'user')]
 
     def save(self, *args, **kwargs):
         if self.user == self.trip.owner:
