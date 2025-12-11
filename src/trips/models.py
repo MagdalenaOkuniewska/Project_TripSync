@@ -57,3 +57,40 @@ class TripMember(models.Model):
 
     def __str__(self):
         return f'{self.user.username} - {self.trip.title}'
+
+
+class TripInvite(models.Model):
+    STATUS_CHOICES = [('accepted', 'Accepted'),
+                    ('pending', 'Pending'),
+                    ('declined', 'Declined'),
+                      ('expired', 'Expired')]
+
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='invites')
+
+    invited_by = models.ForeignKey(User, on_delete=models.CASCADE, related_name='send_trip_invites')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_invites')
+    status =  models.CharField(max_length=30, choices= STATUS_CHOICES, default='pending')
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    responded = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = [('trip', 'user')]
+
+    def accept(self):
+        if self.status != 'pending':
+            raise ValidationError('Trip must be in pending state')
+
+        from django.utils import timezone
+        self.status = 'accepted'
+        self.responded_at = timezone.now()
+        self.save()
+
+        TripMember.objects.get_or_create(
+            trip=self.trip,
+            user=self.user,
+            defaults={'role': 'member'}
+        )
+
