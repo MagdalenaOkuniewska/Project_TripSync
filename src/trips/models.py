@@ -56,9 +56,10 @@ class TripMember(models.Model):
 
 class TripInvite(models.Model):
     STATUS_CHOICES = [('accepted', 'Accepted'),
-                    ('pending', 'Pending'),
-                    ('declined', 'Declined'),
-                      ('expired', 'Expired')]
+                      ('pending', 'Pending'),
+                      ('declined', 'Declined'),
+                      ('expired', 'Expired')
+                      ]
 
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='invites')
 
