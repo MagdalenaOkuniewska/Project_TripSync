@@ -144,6 +144,11 @@ class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         messages.error(self.request, 'You cannot access this invitation as it is not yours.')
         return redirect('trip-invite-list')
 
+    def get_context_data(self, **kwargs):
+        """Passing 'response' to HTML template"""
+        context = super().get_context_data(**kwargs)
+        context['response'] = self.kwargs.get('response')  # 'accept' lub 'decline'
+        return context
 
     def form_valid(self, form):
         invite = self.get_object()

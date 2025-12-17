@@ -27,7 +27,7 @@ class Trip(models.Model):
         return self.owner == user
 
     def is_participant(self, user):
-        self.members.filter(user=user).exists()
+        return self.members.filter(user=user).exists()
 
     def __str__(self):
         return f'{self.title} - {self.destination}'

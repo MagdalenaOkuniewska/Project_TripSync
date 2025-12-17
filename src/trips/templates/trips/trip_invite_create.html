@@ -1,0 +1,17 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Invite Members - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Invite Members to {{ trip.title }}</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit" class="btn btn-success">Send Invitation</button>
+        <a href="{% url 'trip-detail' trip.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

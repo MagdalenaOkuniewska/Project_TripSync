@@ -10,7 +10,7 @@ urlpatterns = [
 
     path('<int:trip_id>/invite/', TripInviteCreateView.as_view(), name='trip-invite-create'),
     path('invites/', TripInviteListView.as_view(), name='trip-invite-list'),
-    path('invites/<int:pk>/<str:response>/', TripInviteRespondView.as_view(), name='trip-invite-respond'),
     path('invites/<int:pk>/cancel/', TripInviteCancelView.as_view(), name='trip-invite-cancel'),
+    path('invites/<int:pk>/<str:response>/', TripInviteRespondView.as_view(), name='trip-invite-respond'),
 
 ]

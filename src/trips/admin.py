@@ -11,4 +11,4 @@ class TripMemberAdmin(admin.ModelAdmin):
 
 @admin.register(TripInvite)
 class TripInviteAdmin(admin.ModelAdmin):
-    list_display = ('id', 'trip', 'user', 'status', 'created_at', 'responded_at')
+    list_display = ('id', 'trip','status', 'created_at', 'responded_at')

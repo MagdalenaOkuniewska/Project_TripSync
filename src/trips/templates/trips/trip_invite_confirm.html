@@ -1,0 +1,27 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Confirm - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    {% if response == 'accept' %}
+        <h2>Accept Invitation?</h2>
+        <p>You're about to join: <strong>{{ object.trip.title }}</strong></p>
+    {% else %}
+        <h2>Decline Invitation?</h2>
+        <p>You're about to decline: <strong>{{ object.trip.title }}</strong></p>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {% if response == 'accept' %}
+            <button type="submit" class="btn btn-success">Yes, Accept</button>
+        {% else %}
+            <button type="submit" class="btn btn-danger">Yes, Decline</button>
+        {% endif %}
+
+        <a href="{% url 'trip-invite-list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}
