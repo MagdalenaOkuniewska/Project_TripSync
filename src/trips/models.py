@@ -1,5 +1,5 @@
 from random import choice
-
+from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
@@ -36,15 +36,10 @@ class TripMember(models.Model):
     ROLE_CHOICES = [('owner', 'Owner'),
                     ('member', 'Member')]
 
-    # STATUS_CHOICES = [('active', 'Active'),
-    #                   ('pending', 'Pending'),
-    #                   ('declined', 'Declined')]
-
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='members') # trip.members.all()
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='trip_memberships')
     role = models.CharField(max_length=50, choices= ROLE_CHOICES, default='member', null=True, blank=True)
     joined_at = models.DateTimeField(auto_now_add=True)
-    # status = models.CharField(max_length=30, choices= STATUS_CHOICES, default='member', blank=True)
 
     class Meta:
         ordering = ['-joined_at']
@@ -73,17 +68,26 @@ class TripInvite(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(null=True, blank=True)
-    responded = models.DateTimeField(null=True, blank=True)
+    responded_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
         ordering = ['-created_at']
         unique_together = [('trip', 'user')]
 
+    def is_expired(self):
+        if self.status == 'pending' and self.expires_at:
+            return timezone.now() > self.expires_at
+        return False
+
     def accept(self):
         if self.status != 'pending':
-            raise ValidationError('Trip must be in pending state')
+            raise ValidationError('Trip must be in pending state to accept.')
 
-        from django.utils import timezone
+        if self.is_expired():
+            self.status = 'expired'
+            self.save()
+            raise ValidationError('This invitation has expired.')
+
         self.status = 'accepted'
         self.responded_at = timezone.now()
         self.save()
@@ -94,3 +98,25 @@ class TripInvite(models.Model):
             defaults={'role': 'member'}
         )
 
+    def decline(self):
+        if self.status != 'pending':
+            raise ValidationError('Trip must be in pending state to decline.')
+
+        self.status = 'declined'
+        self.responded_at = timezone.now()
+        self.save()
+
+    def mark_expired(self):
+        if self.is_expired():
+            self.status = 'expired'
+            self.save()
+            return True #marked as expired
+        return False #invie is not expired - done nothing
+
+    def cancel(self):
+        if self.status != 'pending':
+            raise ValidationError(f'Cannot cancel invitation that is in {self.status} state')
+        self.delete()
+
+    def __str__(self):
+        return f'{self.user.username} invited to {self.trip.title} - {self.status}'
