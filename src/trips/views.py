@@ -140,6 +140,11 @@ class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         invite = self.get_object()
         return invite.user == self.request.user
 
+    def handle_no_permission(self):
+        messages.error(self.request, 'You cannot access this invitation as it is not yours.')
+        return redirect('trip-invite-list')
+
+
     def form_valid(self, form):
         invite = self.get_object()
         response = self.kwargs.get('response') #from URL .../<str:response>/

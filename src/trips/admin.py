@@ -1,10 +1,14 @@
 from django.contrib import admin
-from .models import Trip, TripMember
+from .models import Trip, TripMember, TripInvite
 
 @admin.register(Trip)
 class TripAdmin(admin.ModelAdmin):
     list_display = ('id',)
 
 @admin.register(TripMember)
-class TripAdmin(admin.ModelAdmin):
+class TripMemberAdmin(admin.ModelAdmin):
     list_display = ('id', 'trip', 'user', 'role', 'joined_at')
+
+@admin.register(TripInvite)
+class TripInviteAdmin(admin.ModelAdmin):
+    list_display = ('id', 'trip', 'user', 'status', 'created_at', 'responded_at')
