@@ -1,0 +1,39 @@
+{% extends 'dashboard/base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}Members - {{trip.title}}{% endblock %}
+
+{% block content %}
+
+<div class="container mt-4">
+    <h2>Trip Members</h2>
+    <p>{{ trip.title }} - {{ trip.destination }}</p>
+
+    {% if members %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Role</th>
+                    <th>Joined</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for member in members %}
+                    <tr>
+                        <td>{{ member.user.username }}</td>
+                        <td>{{ member.role }}</td>
+                        <td>{{ member.joined_at|date:"M d, Y" }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No members yet.</p>
+    {% endif %}
+
+    <a href="{% url 'trip-detail' trip.id %}" class="btn btn-secondary">Back to Trip</a>
+</div>
+
+{% endblock %}
