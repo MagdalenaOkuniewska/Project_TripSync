@@ -1,3 +1,4 @@
+
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.template.context_processors import request
@@ -10,6 +11,7 @@ from .models import Trip, TripInvite, TripMember
 from .forms import TripForm
 
 
+
 class TripListView(LoginRequiredMixin, ListView):
     model = Trip
     template_name = 'trips/trip_list.html'
@@ -20,6 +22,7 @@ class TripListView(LoginRequiredMixin, ListView):
         """Trips where User is on Owner OR a Participant"""
         user = self.request.user
         return Trip.objects.filter(Q(owner=user) | Q(members__user=user)).distinct()
+
 
 class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Trip
@@ -98,6 +101,11 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = 'trips/trip_invite_create.html'
     fields = ['user']
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['trip_id'] = self.kwargs['trip_id']
+        return context
+
     def test_func(self):
         self.trip = Trip.objects.get(id=self.kwargs['trip_id']) #self -> atrybut klasy użyty w innych metodach poniżej
         return self.trip.owner == self.request.user
@@ -136,6 +144,7 @@ class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     template_name = 'trips/trip_invite_confirm.html'
     fields = []
 
+
     def test_func(self):
         invite = self.get_object()
         return invite.user == self.request.user
@@ -147,19 +156,18 @@ class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
     def get_context_data(self, **kwargs):
         """Passing 'response' to HTML template"""
         context = super().get_context_data(**kwargs)
-        context['response'] = self.kwargs.get('response')  # 'accept' lub 'decline'
+        context['response'] = self.request.GET.get('response', 'accept')
         return context
 
-    def form_valid(self, form):
+    def post(self, request, *args, **kwargs):
         invite = self.get_object()
-        response = self.kwargs.get('response') #from URL .../<str:response>/
+        response = request.POST.get('response')
 
         try:
             if response == 'accept':
                 invite.accept()
                 messages.success(self.request, f'Invitation to "{invite.trip.title}" Accepted.')
                 return redirect('trip-detail', pk=invite.trip.id)
-
             elif response == 'decline':
                 invite.decline()
                 messages.success(self.request, f'Invitation to "{invite.trip.title}" Declined.')
@@ -169,7 +177,7 @@ class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
             messages.error(self.request,str(e))
             return redirect('trip-invite-list')
 
-        return super().form_valid(form)
+        return redirect('trip-invite-list')
 
     def get_success_url(self):
         return reverse_lazy('trip-detail', kwargs={'pk': self.object.trip.id})

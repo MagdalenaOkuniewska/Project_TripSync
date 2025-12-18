@@ -107,17 +107,17 @@ class TripInvite(models.Model):
         self.responded_at = timezone.now()
         self.save()
 
-    def mark_expired(self):
+    def mark_expired(self) -> bool:
         if self.is_expired():
             self.status = 'expired'
-            self.save()
+            self.save(update_fields=['status'])
             return True #marked as expired
         return False #invie is not expired - done nothing
 
-    def cancel(self):
+    def cancel(self) -> None:
         if self.status != 'pending':
             raise ValidationError(f'Cannot cancel invitation that is in {self.status} state')
         self.delete()
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f'{self.user.username} invited to {self.trip.title} - {self.status}'

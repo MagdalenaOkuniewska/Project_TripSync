@@ -15,10 +15,11 @@
                     <p>Dates: {{ invite.trip.start_date }} - {{ invite.trip.end_date }}</p>
                     <p>Invited by: {{ invite.invited_by.username }}</p>
 
-                    <a href="{% url 'trip-invite-respond' invite.pk 'accept' %}" class="btn btn-success">
+
+                    <a href="{% url 'trip-invite-respond' invite.pk %}?response=accept" class="btn btn-success">
                         Accept
                     </a>
-                    <a href="{% url 'trip-invite-respond' invite.pk 'decline' %}" class="btn btn-danger">
+                    <a href="{% url 'trip-invite-respond' invite.pk %}?response=decline" class="btn btn-danger">
                         Decline
                     </a>
                 </div>

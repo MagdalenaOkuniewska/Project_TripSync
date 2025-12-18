@@ -11,10 +11,9 @@
         <h2>Decline Invitation?</h2>
         <p>You're about to decline: <strong>{{ object.trip.title }}</strong></p>
     {% endif %}
-
     <form method="POST">
         {% csrf_token %}
-
+        <input type="hidden" name="response" value="{{ response }}">
         {% if response == 'accept' %}
             <button type="submit" class="btn btn-success">Yes, Accept</button>
         {% else %}

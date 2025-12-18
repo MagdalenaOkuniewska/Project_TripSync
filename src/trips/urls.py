@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import TripListView,TripCreateView, TripDetailView, TripUpdateView, TripDeleteView, TripInviteCreateView, TripMemberListView,TripInviteListView, TripInviteCancelView, TripInviteSentListView,TripInviteRespondView
+from .views import TripListView, TripCreateView, TripDetailView, TripUpdateView, TripDeleteView, TripInviteCreateView, TripMemberListView,TripInviteListView, TripInviteCancelView, TripInviteSentListView,TripInviteRespondView
 
 urlpatterns = [
     path('', TripListView.as_view(), name='trip-list'),
@@ -14,6 +14,6 @@ urlpatterns = [
     path('invites/', TripInviteListView.as_view(), name='trip-invite-list'),
     path('invites/sent/', TripInviteSentListView.as_view(), name='trip-invite-sent'),
     path('invites/<int:pk>/cancel/', TripInviteCancelView.as_view(), name='trip-invite-cancel'),
-    path('invites/<int:pk>/<str:response>/', TripInviteRespondView.as_view(), name='trip-invite-respond'),
+    path('invites/<int:pk>', TripInviteRespondView.as_view(), name='trip-invite-respond'),
 
 ]
