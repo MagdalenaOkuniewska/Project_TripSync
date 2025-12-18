@@ -1,0 +1,32 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}My Invitations - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>My Invitations</h2>
+
+    {% if invites %}
+        {% for invite in invites %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5>{{ invite.trip.title }}</h5>
+                    <p>Destination: {{ invite.trip.destination }}</p>
+                    <p>Dates: {{ invite.trip.start_date }} - {{ invite.trip.end_date }}</p>
+                    <p>Invited by: {{ invite.invited_by.username }}</p>
+
+
+                    <a href="{% url 'trip-invite-respond' invite.pk %}?response=accept" class="btn btn-success">
+                        Accept
+                    </a>
+                    <a href="{% url 'trip-invite-respond' invite.pk %}?response=decline" class="btn btn-danger">
+                        Decline
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No pending invitations.</p>
+    {% endif %}
+</div>
+{% endblock %}

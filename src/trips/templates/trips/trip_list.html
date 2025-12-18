@@ -10,9 +10,26 @@
     <h2 class="text-uppercase mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
         My Trips
     </h2>
-    <a href="{% url 'trip-create' %}" class="btn" style="background-color: rgba(63,106,71,0.74); color: white; padding: 12px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
-        <i class="fas fa-plus"></i> Create Trip
-    </a>
+
+    <!-- BUTTONS ROW -->
+    <div class="d-flex justify-content-center align-items-start gap-3">
+        <!-- CREATE TRIP (left) -->
+        <div>
+            <a href="{% url 'trip-create' %}" class="btn" style="background-color: rgba(255,212,64,0.98); color: #100808; padding: 12px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                <i class="fas fa-plus"></i> Create Trip
+            </a>
+        </div>
+
+        <!-- INVITATIONS BUTTONS (right, stacked) -->
+        <div class="d-flex flex-column gap-2">
+            <a href="{% url 'trip-invite-list' %}" class="btn" style="background-color: rgba(63,106,71,0.74); color: white; padding: 8px 25px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.9rem;">
+                <i class="fas fa-envelope"></i> My Invitations
+            </a>
+            <a href="{% url 'trip-invite-sent' %}" class="btn" style="background-color: rgba(197,172,66,0.98); color: white; padding: 8px 25px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.9rem;">
+                <i class="fas fa-paper-plane"></i> Sent Invitations
+            </a>
+        </div>
+    </div>
 </div>
 
 {% if trips %}
@@ -106,4 +123,5 @@
         </a>
     </div>
 {% endif %}
+
 {% endblock %}
