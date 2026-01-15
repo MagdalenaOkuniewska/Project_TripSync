@@ -16,6 +16,8 @@ class TripInviteCancelView(LoginRequiredMixin,UserPassesTestMixin, DeleteView):
         return invite.trip.owner == self.request.user
 
     def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
         messages.error(self.request, 'Only the trip owner can cancel invitations.')
         return redirect('trip-list')
 

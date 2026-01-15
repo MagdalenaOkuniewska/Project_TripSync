@@ -6,7 +6,6 @@ from django.views.generic import UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ..models import TripInvite
 
-
 class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = TripInvite
     template_name = 'trips/trip_invite_confirm.html'
@@ -17,6 +16,8 @@ class TripInviteRespondView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         return invite.user == self.request.user
 
     def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
         messages.error(self.request, 'You cannot access this invitation as it is not yours.')
         return redirect('trip-invite-list')
 

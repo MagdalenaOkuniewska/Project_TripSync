@@ -23,7 +23,6 @@ class TripCreateView(LoginRequiredMixin, CreateView):
             trip=self.object,
             user=self.request.user,
             role='owner',
-            status='active'
         )
 
         messages.success(self.request, f'Your trip "{form.instance.title}" has been created.')

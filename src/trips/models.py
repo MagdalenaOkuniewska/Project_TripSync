@@ -1,4 +1,3 @@
-from random import choice
 from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
@@ -43,7 +42,7 @@ class TripMember(models.Model):
 
     class Meta:
         ordering = ['-joined_at']
-        unique_together = [('trip', 'user')]
+        unique_together = [('trip', 'user')] #to avoid duplicates
 
     def save(self, *args, **kwargs):
         if self.user == self.trip.owner:
@@ -107,7 +106,7 @@ class TripInvite(models.Model):
         self.responded_at = timezone.now()
         self.save()
 
-    def mark_expired(self) -> bool:
+    def mark_expired(self) -> bool: # TODO
         if self.is_expired():
             self.status = 'expired'
             self.save(update_fields=['status'])

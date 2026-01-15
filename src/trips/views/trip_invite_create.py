@@ -21,6 +21,8 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return self.trip.owner == self.request.user
 
     def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
         messages.error(self.request, 'Only the Trip Owner can invite to a Trip.')
         return redirect('trip-list')
 

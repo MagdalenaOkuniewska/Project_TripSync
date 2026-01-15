@@ -17,5 +17,7 @@ class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
 
     def handle_no_permission(self):
         """Handles no permission in case User is neither Owner/Patricipant"""
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
         messages.error(self.request, 'You are not allowed to view this Trip.')
         return redirect('trip-list')

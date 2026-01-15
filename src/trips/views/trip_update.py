@@ -26,5 +26,7 @@ class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         return trip.is_owner(self.request.user)
 
     def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
         messages.error(self.request, 'Only the Trip Owner can edit this Trip.')
         return redirect('trip-list')

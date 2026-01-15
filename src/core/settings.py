@@ -37,12 +37,14 @@ INSTALLED_EXTENSIONS = [
     'trips.apps.TripConfig',
     'crispy_forms',
     'crispy_bootstrap4',
+    'silk'
 
 ]
 
 INSTALLED_APPS += INSTALLED_EXTENSIONS
 
 MIDDLEWARE = [
+    'silk.middleware.SilkyMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -65,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.media',
+                'django.template.context_processors.request',
             ],
         },
     },
