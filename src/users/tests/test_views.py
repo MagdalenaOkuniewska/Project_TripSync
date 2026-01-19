@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
 from ..forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
+from trips.models import Trip
+from django.utils import timezone
 from django.contrib.messages import get_messages
 from django.urls import reverse
 User = get_user_model()
@@ -61,10 +63,50 @@ class RegistrationViewTest(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('username', form.errors)
 
-
 class ProfileViewTest(TestCase):
     def setUp(self):
         self.url = reverse('profile')
+        self.user = User.objects.create_user(
+            username='testuser',
+            email='email@example.com',
+            password='custompassword123'
+        )
+
+        self.trip1 = Trip.objects.create(
+            title="Trip 1",
+            destination="Destination 1",
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date(),
+            owner=self.user
+        )
+        self.trip2 = Trip.objects.create(
+            title="Trip 2",
+            destination="Destination 2",
+            start_date=timezone.now().date(),
+            end_date=timezone.now().date(),
+            owner=self.user
+        )
+
+    def test_profile_page_load_correctly(self):
+        self.client.login(username='testuser', password='custompassword123')
+        response = self.client.get(self.url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'users/profile.html')
+
+        self.assertIn('user_trips', response.context)
+        self.assertIn(self.trip1, response.context['user_trips'])
+        self.assertIn(self.trip2, response.context['user_trips'])
+
+    def test_profile_requires_login(self):
+        response = self.client.get(self.url)
+        expected_url = f'{reverse("login")}?next={self.url}'
+        self.assertRedirects(response, expected_url)
+
+
+class ProfileEditViewTest(TestCase):
+    def setUp(self):
+        self.url = reverse('edit_profile')
         self.user = User.objects.create_user(
             username='testuser',
             email='email@example.com',
@@ -78,7 +120,7 @@ class ProfileViewTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'users/profile.html')
+        self.assertTemplateUsed(response, 'users/edit_profile.html')
         self.assertIsInstance(response.context['form'], UserUpdateForm)
 
     def test_profile_requires_login(self):
