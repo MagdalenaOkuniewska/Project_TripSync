@@ -52,6 +52,16 @@ class ProfileView(LoginRequiredMixin, ListView ):
         context['declined_invites'] = declined_invites
         context['pending_invites'] = all_invites
 
+        days_since_joined = (timezone.now() - user.date_joined).days +1
+
+        if user.last_login:
+            days_since_last_login = (timezone.now() - user.last_login).days +1
+        else:
+            days_since_last_login = 0
+
+        context['days_since_joined'] = days_since_joined
+        context['days_since_last_login'] = days_since_last_login
+
         return context
 
 

@@ -3,12 +3,39 @@
 {% block title %}My Profile - TripSync{% endblock %}
 
 {% block content %}
-<!-- HEADER -->
+<!-- HEADER WITH AVATAR -->
 <div class="text-center mb-4">
-    <h4 class="mb-2"
-        style="font-family: 'Montserrat', sans-serif; font-weight: 500;">
-        <i class="fas fa-user"></i> {{ user.username }}
-    </h4>
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
+        {% if user.avatar %}
+            <img src="{{ user.avatar.url }}"
+                 alt="{{ user.username }}"
+                 class="rounded-circle"
+                 style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(63,106,71,0.74);">
+        {% else %}
+            <img src="{{ MEDIA_URL }}default.jpg"
+                 alt="{{ user.username }}"
+                 class="rounded-circle"
+                 style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(63,106,71,0.74);">
+        {% endif %}
+
+        <div class="text-start">
+            <h4 class="mb-1" style="font-family: 'Montserrat', sans-serif; font-weight: 600;">
+                {{ user.username }}
+            </h4>
+            <small class="text-muted d-block">
+                <i class="fas fa-calendar-check"></i> Registered: {{ days_since_joined }} days ago
+            </small>
+            {% if days_since_last_login is not None %}
+                <small class="text-muted d-block">
+                    <i class="fas fa-sign-in-alt"></i> Last login: {{ days_since_last_login }} days ago
+                </small>
+            {% else %}
+                <small class="text-muted d-block">
+                    <i class="fas fa-sign-in-alt"></i> Last login: Never
+                </small>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 
@@ -37,7 +64,7 @@
 
             <h5 class="text-capitalize mb-4"
                 style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                <i class="fas fa-plane-departure"></i> Upcoming Confirmed Trips - {{ upcoming_trips|length }}
+                <i class="fas fa-plane-departure"></i> Upcoming Confirmed Trips: <span style="color: rgb(41,147,59); font-weight: 900;">{{ upcoming_trips|length }}</span>
             </h5>
 
             {% if upcoming_trips %}
@@ -92,7 +119,7 @@
 
             <h5 class="text-capitalize mb-4"
                 style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                <i class="fas fa-clock"></i> Past Trips - {{ past_trips|length }}
+                <i class="fas fa-clock"></i> Past Trips: <span style="color: rgb(41,147,59); font-weight: 900;">{{ past_trips|length }}</span>
             </h5>
 
             {% if past_trips %}
@@ -133,7 +160,7 @@
 
             <h5 class="text-capitalize mb-4"
                 style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                <i class="fas fa-times-circle"></i> Declined - {{ declined_invites|length }}
+                <i class="fas fa-times-circle"></i> Declined: <span style="color: rgba(216,50,81,0.98); font-weight: 900;">{{ declined_invites |length }}</span>
             </h5>
 
             {% if declined_invites %}
