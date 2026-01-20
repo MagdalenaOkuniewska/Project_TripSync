@@ -6,8 +6,9 @@ from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
 from .models import CustomUser
+from trips.models import Trip, TripInvite
 from django.db.models import Q
-from trips.models import Trip
+
 
 class RegistrationView(CreateView):
     model = CustomUser
@@ -28,18 +29,28 @@ class ProfileView(LoginRequiredMixin, ListView ):
 
     def get_queryset(self):
         user = self.request.user
-        return Trip.objects.filter(Q(owner=user) | Q(members__user=user)).distinct().order_by('start_date')
+        return Trip.objects.filter(Q(owner=user) | Q(members__user=user)
+                                   ).select_related('owner').distinct().order_by('start_date')
 
     def get_context_data(self, **kwargs):
         """Passing 'response' to HTML template"""
         context = super().get_context_data(**kwargs)
 
         today = timezone.localtime(timezone.now()).date()
+        user = self.request.user
 
         all_trips = self.get_queryset()
 
+        # expired:
+        TripInvite.objects.filter(user=user, status='pending', expires_at__lte=timezone.now()).update(status='expired')
+
+        all_invites = TripInvite.objects.filter(user=user, status='pending').order_by('-created_at')
+        declined_invites = TripInvite.objects.filter(user=user, status='declined').select_related('trip').order_by('-responded_at')
+
         context['upcoming_trips'] = all_trips.filter(start_date__gte=today)
         context['past_trips'] = all_trips.filter(end_date__lt=today)
+        context['declined_invites'] = declined_invites
+        context['pending_invites'] = all_invites
 
         return context
 

@@ -14,9 +14,9 @@
 
                         {% if user.is_authenticated %}
                             <li class="nav-item"><a class="nav-link" href="{%url 'profile' %}">Profile</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{%url 'edit_profile' %}">Edit Profile</a></li>
                             <li class="nav-item"><a class="nav-link" href="{% url 'trip-list'%}">My Trips</a></li>
                             <li class="nav-item"><a class="nav-link" href="{% url 'trip-create'%}">Create Trip</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{%url 'edit_profile' %}">Profile Settings</a></li>
 
                             <li class="nav-item">
                                 <form method="post" action="{%url 'logout' %}" style="display: inline;">
