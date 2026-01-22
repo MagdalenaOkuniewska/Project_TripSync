@@ -1,31 +1,207 @@
 {% extends 'dashboard/base.html' %}
 
-{% load crispy_forms_tags %}
+{% block title %}My Profile - TripSync{% endblock %}
+
 {% block content %}
-<div class="content-section">
-    <div class="media">
+<!-- HEADER WITH AVATAR -->
+<div class="text-center mb-4">
+    <div class="d-flex justify-content-center align-items-center gap-3 mb-3">
         {% if user.avatar %}
-            <img class="rounded-circle account-img" src="{{ user.avatar.url }}">
+            <img src="{{ user.avatar.url }}"
+                 alt="{{ user.username }}"
+                 class="rounded-circle"
+                 style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(63,106,71,0.74);">
         {% else %}
-            <img class="rounded-circle account-img" src="{{ MEDIA_URL }}default.jpg">
+            <img src="{{ MEDIA_URL }}default.jpg"
+                 alt="{{ user.username }}"
+                 class="rounded-circle"
+                 style="width: 80px; height: 80px; object-fit: cover; border: 3px solid rgba(63,106,71,0.74);">
         {% endif %}
 
-        <div class="media-body">
-            <h2 class="account-heading">{{ user.username }}</h2>
-            <p class="text-secondary">{{ user.email }}</p>
-            <p class="text-muted small">Member since {{ user.date_joined|date:"F Y" }}</p>
+        <div class="text-start">
+            <h4 class="mb-1" style="font-family: 'Montserrat', sans-serif; font-weight: 600;">
+                {{ user.username }}
+            </h4>
+            <small class="text-muted d-block">
+                <i class="fas fa-calendar-check"></i> Registered: {{ days_since_joined }} days ago
+            </small>
+            {% if days_since_last_login is not None %}
+                <small class="text-muted d-block">
+                    <i class="fas fa-sign-in-alt"></i> Last login: {{ days_since_last_login }} days ago
+                </small>
+            {% else %}
+                <small class="text-muted d-block">
+                    <i class="fas fa-sign-in-alt"></i> Last login: Never
+                </small>
+            {% endif %}
         </div>
-         <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <fieldset class="form-group">
-            <legend class="border-bottom mb-4">Profile info</legend>
-            {{ form|crispy }}
-        </fieldset>
-        <div class="form-group">
-            <button class="btn btn-outline-info" type="submit">Update</button>
-        </div>
-    </form>
     </div>
 </div>
-{% endblock content %}
 
+
+<!-- PROFILE INFO -->
+<div class="d-flex justify-content-center gap-3 mb-5">
+
+
+    <!-- PENDING INVITATIONS - KLIKALNE -->
+    <a href="{% url 'trip-invite-list' %}" class="text-decoration-none">
+    <div class="card shadow" style="width: 195px; cursor: pointer; transition: transform 0.2s; border: 2px solid rgba(220, 53, 69, 0.3);">
+        <div class="card-body text-center py-3">
+            <i class="fas fa-envelope" style="font-size: 1.8rem; color: rgba(255,212,64,0.98);"></i>
+            <p class="mb-0 mt-2 small text-dark">
+                <strong>Pending invitations:</strong> {{ pending_invites|length }}
+            </p>
+        </div>
+    </div>
+</a>
+</div>
+
+
+<!-- UPCOMING TRIPS -->
+<div class="d-flex justify-content-center mb-5">
+    <div class="card shadow" style="width: 800px;">
+        <div class="card-body">
+
+            <h5 class="text-capitalize mb-4"
+                style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-plane-departure"></i> Upcoming Confirmed Trips: <span style="color: rgb(41,147,59); font-weight: 900;">{{ upcoming_trips|length }}</span>
+            </h5>
+
+            {% if upcoming_trips %}
+                <ul class="list-group list-group-flush">
+
+                    {% for trip in upcoming_trips %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <h6 class="mb-1 text-capitalize"
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                                    {{ trip.title }}
+                                </h6>
+                                <small class="text-muted">
+                                    <i class="fas fa-map-marker-alt"></i> {{ trip.destination }} |
+                                    <i class="fas fa-calendar"></i>
+                                    {{ trip.start_date|date:"M d, Y" }} – {{ trip.end_date|date:"M d, Y" }}
+                                </small>
+                            </div>
+
+                            <div class="d-flex gap-2 align-items-center">
+                                {% if trip.owner == user %}
+                                    <span class="badge bg-warning text-dark">Owner</span>
+                                {% else %}
+                                    <span class="badge bg-success">Member</span>
+                                {% endif %}
+
+                                <a href="{% url 'trip-detail' trip.pk %}"
+                                   class="btn btn-sm"
+                                   style="background-color: rgba(63,106,71,0.74); color: white;">
+                                    View
+                                </a>
+                            </div>
+
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">No upcoming trips.</p>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<!-- PAST TRIPS & DECLINED INVITATIONS  -->
+<div class="d-flex justify-content-center gap-4">
+
+    <!-- PAST TRIPS -->
+    <div class="card shadow" style="width: 400px;">
+        <div class="card-body">
+
+            <h5 class="text-capitalize mb-4"
+                style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-clock"></i> Past Trips: <span style="color: rgb(41,147,59); font-weight: 900;">{{ past_trips|length }}</span>
+            </h5>
+
+            {% if past_trips %}
+                <ul class="list-group list-group-flush">
+                    {% for trip in past_trips %}
+                        <li class="list-group-item px-0">
+                            <div class="mb-2">
+                                <h6 class="mb-1 text-capitalize"
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
+                                    {{ trip.title }}
+                                </h6>
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-map-marker-alt"></i> {{ trip.destination }}
+                                </small>
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ trip.start_date|date:"M d, Y" }} – {{ trip.end_date|date:"M d, Y" }}
+                                </small>
+                            </div>
+
+                            <a href="{% url 'trip-detail' trip.pk %}"
+                               class="btn btn-sm btn-outline-secondary w-100">
+                                View
+                            </a>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">No past trips.</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+    <!-- DECLINED INVITATIONS -->
+    <div class="card shadow" style="width: 400px;">
+        <div class="card-body">
+
+            <h5 class="text-capitalize mb-4"
+                style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-times-circle"></i> Declined: <span style="color: rgba(216,50,81,0.98); font-weight: 900;">{{ declined_invites |length }}</span>
+            </h5>
+
+            {% if declined_invites %}
+                <ul class="list-group list-group-flush">
+                    {% for invite in declined_invites %}
+                        <li class="list-group-item px-0">
+                            <div class="mb-2">
+                                <h6 class="mb-1 text-capitalize"
+                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
+                                    {{ invite.trip.title }}
+                                </h6>
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-map-marker-alt"></i> {{ invite.trip.destination }}
+                                </small>
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ invite.trip.start_date|date:"M d, Y" }}
+                                </small>
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-user"></i> By {{ invite.invited_by.username }}
+                                </small>
+                            </div>
+
+                            <span class="badge bg-danger w-100">Declined {{ invite.responded_at|timesince }} ago</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted mb-0">No declined invitations.</p>
+            {% endif %}
+
+        </div>
+    </div>
+
+</div>
+
+<style>
+    a:has(.card):hover .card {
+        transform: scale(1.05);
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.2) !important;
+    }
+</style>
+
+{% endblock %}
