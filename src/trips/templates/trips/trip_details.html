@@ -66,8 +66,8 @@
                                     Joined {{ member.joined_at|date:"M d, Y" }}
                                 </small>
                             </div>
-                            <span class="badge" style="background-color: {% if member.status == 'active' %}#28a745{% elif member.status == 'pending' %}#ffc107{% else %}#dc3545{% endif %};">
-                                {{ member.get_status_display }}
+                            <span class="badge {% if member.role == 'owner' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                            {{ member.get_role_display }}
                             </span>
                         </div>
                     {% endfor %}

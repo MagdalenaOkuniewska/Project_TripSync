@@ -97,7 +97,7 @@ class NoteListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
 
 class NoteDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     model = Note
-    template_name = "notes/note_detail.html"
+    template_name = "notes/note_details.html"
     context_object_name = "note"
 
     def test_func(self):

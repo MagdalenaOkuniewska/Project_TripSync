@@ -1,0 +1,81 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}Edit Note{% else %}Create Note{% endif %} - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">  <!-- ← Zmniejszone z col-md-8 na col-md-6 -->
+            <div class="card shadow">
+                <div class="card-body p-4">  <!-- ← Zmniejszone z p-5 na p-4 -->
+                    <h4 class="text-center mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                        {% if form.instance.pk %}
+                            <i class="fas fa-edit"></i> Edit Note
+                        {% else %}
+                            <i class="fas fa-plus"></i> Create New Note
+                        {% endif %}
+                    </h4>
+
+                    {% if trip %}
+                        <p class="text-center text-muted mb-4">
+                            <i class="fas fa-suitcase"></i> Trip: <strong>{{ trip.title }}</strong>
+                        </p>
+                    {% endif %}
+
+                    <form method="POST">
+                        {% csrf_token %}
+                        <fieldset class="form-group">
+                            <!-- Note Type NAJPIERW -->
+                            <div class="mb-3">
+                                {{ form.note_type.label_tag }}
+                                {{ form.note_type }}
+                                {% if form.note_type.errors %}
+                                    <div class="text-danger">{{ form.note_type.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Title -->
+                            <div class="mb-3">
+                                {{ form.title.label_tag }}
+                                {{ form.title }}
+                                {% if form.title.errors %}
+                                    <div class="text-danger">{{ form.title.errors }}</div>
+                                {% endif %}
+                            </div>
+
+                            <!-- Content -->
+                            <div class="mb-3">
+                                {{ form.content.label_tag }}
+                                {{ form.content }}
+                                {% if form.content.errors %}
+                                    <div class="text-danger">{{ form.content.errors }}</div>
+                                {% endif %}
+                            </div>
+                        </fieldset>
+
+                        <div class="d-flex gap-2 mt-3">
+                            <button type="submit" class="btn flex-1" style="background-color: rgba(63,106,71,0.74); color: white; padding: 10px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase; flex: 1;">
+                                {% if form.instance.pk %}
+                                    <i class="fas fa-save"></i> Save-Update
+                                {% else %}
+                                    <i class="fas fa-plus"></i> Save-Create
+                                {% endif %}
+                            </button>
+                            {% if trip %}
+                                <a href="{% url 'note-list' trip.id %}" class="btn btn-outline-secondary" style="padding: 10px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                                    Cancel
+                                </a>
+                            {% else %}
+                                <a href="{% url 'trip-list' %}" class="btn btn-outline-secondary" style="padding: 10px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                                    Cancel
+                                </a>
+                            {% endif %}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

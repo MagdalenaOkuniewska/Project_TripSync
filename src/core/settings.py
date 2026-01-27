@@ -1,28 +1,26 @@
 from pathlib import Path
 import environ
 import os
-env = environ.Env(
-    DEBUG=(bool, False)
-)
+import django.core.mail.utils
+
+env = environ.Env(DEBUG=(bool, False))
 
 
 os.environ["HOSTNAME"] = "localhost"
-
-import django.core.mail.utils
 
 django.core.mail.utils.DNS_NAME = "localhost"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-environ.Env.read_env(os.path.join(BASE_DIR.parent, '.env'))
+environ.Env.read_env(os.path.join(BASE_DIR.parent, ".env"))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
