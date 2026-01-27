@@ -7,6 +7,7 @@ User = get_user_model()
 
 class Note(models.Model):
     NOTE_TYPE_CHOICES = [("private", "Private"), ("public", "Public")]
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notes")
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="notes")
 
