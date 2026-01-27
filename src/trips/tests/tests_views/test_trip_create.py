@@ -7,17 +7,16 @@ from django.urls import reverse
 
 User = get_user_model()
 
+
 class TripCreateViewTest(TestCase):
     def setUp(self):
-        self.url = reverse('trip-create')
+        self.url = reverse("trip-create")
         self.user = User.objects.create_user(
-            username='testuser',
-            password='testpass123'
+            username="testuser", password="testpass123"
         )
 
     def login_user(self):
-        self.client.login(username='testuser', password='testpass123')
-
+        self.client.login(username="testuser", password="testpass123")
 
     def test_page_loads_correctly(self):
         self.login_user()
@@ -25,12 +24,12 @@ class TripCreateViewTest(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'trips/trip_create.html')
-        self.assertIsInstance(response.context['form'], TripForm)
+        self.assertTemplateUsed(response, "trips/trip_create.html")
+        self.assertIsInstance(response.context["form"], TripForm)
 
     def test_requires_login(self):
         response = self.client.get(self.url)
-        expected_url = f'{reverse('login')}?next={self.url}'
+        expected_url = f"{reverse('login')}?next={self.url}"
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, expected_url)
@@ -39,30 +38,32 @@ class TripCreateViewTest(TestCase):
         self.login_user()
 
         data = {
-            'title': 'TestTrip',
-            'destination': 'Example',
-            'start_date': '2026-07-01',
-            'end_date':'2026-07-14'
+            "title": "TestTrip",
+            "destination": "Example",
+            "start_date": "2026-07-01",
+            "end_date": "2026-07-14",
         }
 
         response = self.client.post(self.url, data)
 
-        self.assertTrue(Trip.objects.filter(title='TestTrip', destination = 'Example').exists())
+        self.assertTrue(
+            Trip.objects.filter(title="TestTrip", destination="Example").exists()
+        )
 
-        trip = Trip.objects.get(title='TestTrip')
-        self.assertRedirects(response, reverse('trip-detail', kwargs={'pk': trip.pk}))
+        trip = Trip.objects.get(title="TestTrip")
+        self.assertRedirects(response, reverse("trip-detail", kwargs={"pk": trip.pk}))
 
     def test_logged_user_is_set_as_owner(self):
         self.login_user()
 
         data = {
-            'title': 'TestTrip',
-            'destination': 'Example',
-            'start_date': '2026-07-01',
-            'end_date': '2026-07-14'
+            "title": "TestTrip",
+            "destination": "Example",
+            "start_date": "2026-07-01",
+            "end_date": "2026-07-14",
         }
         self.client.post(self.url, data)
-        trip = Trip.objects.get(title='TestTrip', destination = 'Example')
+        trip = Trip.objects.get(title="TestTrip", destination="Example")
 
         self.assertEqual(trip.owner, self.user)
 
@@ -70,14 +71,14 @@ class TripCreateViewTest(TestCase):
         self.login_user()
 
         data = {
-            'title': 'TestTrip',
-            'destination': 'Example',
-            'start_date': '2026-07-01',
-            'end_date': '2026-07-14'
+            "title": "TestTrip",
+            "destination": "Example",
+            "start_date": "2026-07-01",
+            "end_date": "2026-07-14",
         }
         self.client.post(self.url, data)
 
-        trip = Trip.objects.get(title='TestTrip', destination = 'Example')
+        trip = Trip.objects.get(title="TestTrip", destination="Example")
 
         self.assertTrue(TripMember.objects.filter(trip=trip, user=self.user).exists())
 
@@ -85,14 +86,13 @@ class TripCreateViewTest(TestCase):
         self.login_user()
 
         data = {
-            'title': 'TestTrip',
-            'destination': 'Example',
-            'start_date': '2026-07-01',
-            'end_date': '2026-07-14'
+            "title": "TestTrip",
+            "destination": "Example",
+            "start_date": "2026-07-01",
+            "end_date": "2026-07-14",
         }
         response = self.client.post(self.url, data)
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertIn('has been created', str(messages[0]))
-
+        self.assertIn("has been created", str(messages[0]))

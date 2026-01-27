@@ -6,9 +6,9 @@ from ..models import Trip
 
 class TripListView(LoginRequiredMixin, ListView):
     model = Trip
-    template_name = 'trips/trip_list.html'
-    context_object_name = 'trips'
-    ordering = ['-created_at']
+    template_name = "trips/trip_list.html"
+    context_object_name = "trips"
+    ordering = ["-created_at"]
 
     def get_queryset(self):
         """Trips where User is on Owner OR a Participant"""

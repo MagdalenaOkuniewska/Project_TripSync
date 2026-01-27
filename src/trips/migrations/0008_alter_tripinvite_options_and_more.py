@@ -7,22 +7,22 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0007_tripinvite'),
+        ("trips", "0007_tripinvite"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='tripinvite',
-            options={'ordering': ['-created_at']},
+            name="tripinvite",
+            options={"ordering": ["-created_at"]},
         ),
         migrations.RenameField(
-            model_name='tripinvite',
-            old_name='responded',
-            new_name='responded_at',
+            model_name="tripinvite",
+            old_name="responded",
+            new_name="responded_at",
         ),
         migrations.AlterUniqueTogether(
-            name='tripinvite',
-            unique_together={('trip', 'user')},
+            name="tripinvite",
+            unique_together={("trip", "user")},
         ),
     ]

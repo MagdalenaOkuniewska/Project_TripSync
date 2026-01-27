@@ -10,15 +10,17 @@ from ..forms import TripForm
 class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Trip
     form_class = TripForm
-    template_name = 'trips/trip_create.html'
+    template_name = "trips/trip_create.html"
 
     def get_success_url(self):
         """Redirect to details of created trip"""
-        return reverse_lazy('trip-detail', kwargs={'pk': self.object.pk})
+        return reverse_lazy("trip-detail", kwargs={"pk": self.object.pk})
 
     def form_valid(self, form):
         form.instance.owner = self.request.user
-        messages.success(self.request, f'Your trip "{form.instance.title}"has been updated.')
+        messages.success(
+            self.request, f'Your trip "{form.instance.title}"has been updated.'
+        )
         return super().form_valid(form)
 
     def test_func(self):
@@ -28,5 +30,5 @@ class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return super().handle_no_permission()
-        messages.error(self.request, 'Only the Trip Owner can edit this Trip.')
-        return redirect('trip-list')
+        messages.error(self.request, "Only the Trip Owner can edit this Trip.")
+        return redirect("trip-list")

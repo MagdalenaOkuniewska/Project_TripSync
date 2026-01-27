@@ -8,11 +8,11 @@ from ..models import Trip
 
 class TripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Trip
-    template_name = 'trips/trip_delete.html'
-    success_url = reverse_lazy('trip-list')
+    template_name = "trips/trip_delete.html"
+    success_url = reverse_lazy("trip-list")
 
     def get_success_url(self):
-        messages.success(self.request, 'Trip has been deleted successfully.')
+        messages.success(self.request, "Trip has been deleted successfully.")
         return super().get_success_url()
 
     def test_func(self):
@@ -22,5 +22,5 @@ class TripDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
             return super().handle_no_permission()
-        messages.error(self.request, 'Only the Trip Owner can delete this Trip.')
-        return redirect('trip-list')
+        messages.error(self.request, "Only the Trip Owner can delete this Trip.")
+        return redirect("trip-list")

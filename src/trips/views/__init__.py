@@ -10,7 +10,7 @@ from .trip_invite_sent_list import TripInviteSentListView
 from .trip_invite_cancel import TripInviteCancelView
 from .trip_member_list import TripMemberListView
 
-__alL__ = [
+__all__ = [
     "TripListView",
     "TripCreateView",
     "TripDetailView",
@@ -20,8 +20,6 @@ __alL__ = [
     "TripInviteListView",
     "TripInviteRespondView",
     "TripInviteCancelView",
+    "TripInviteSentListView",
     "TripMemberListView",
-    "TripInviteSentListView"
-
-
 ]

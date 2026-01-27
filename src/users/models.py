@@ -2,8 +2,11 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from PIL import Image
 
+
 class CustomUser(AbstractUser):
-    avatar = models.ImageField(default='default.jpg', upload_to='profile_pics', blank=True, null=True)
+    avatar = models.ImageField(
+        default="default.jpg", upload_to="profile_pics", blank=True, null=True
+    )
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
@@ -18,4 +21,3 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return self.username
-

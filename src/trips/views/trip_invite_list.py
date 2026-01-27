@@ -6,24 +6,23 @@ from ..models import TripInvite
 
 class TripInviteListView(LoginRequiredMixin, ListView):
     model = TripInvite
-    template_name = 'trips/trip_invite_list.html'
-    context_object_name = 'invites'
-    ordering = ['-created_at']
+    template_name = "trips/trip_invite_list.html"
+    context_object_name = "invites"
+    ordering = ["-created_at"]
 
-    def get_queryset(self): # TODO in the future -> Periodic Celery Task.
+    def get_queryset(self):  # TODO in the future -> Periodic Celery Task.
         """Pendning invites"""
-        user  = self.request.user
+        user = self.request.user
 
         TripInvite.objects.filter(
-            user=user,
-            status='pending',
-            expires_at__lte=timezone.now()
-        ).update(status='expired')
-
+            user=user, status="pending", expires_at__lte=timezone.now()
+        ).update(status="expired")
 
         # invites = TripInvite.objects.filter(user=self.request.user, status='pending')
 
         # for invite in invites:
-            # invite.mark_expired()
+        # invite.mark_expired()
 
-        return TripInvite.objects.filter(user=self.request.user, status='pending').select_related('trip', 'invited_by')
+        return TripInvite.objects.filter(
+            user=self.request.user, status="pending"
+        ).select_related("trip", "invited_by")

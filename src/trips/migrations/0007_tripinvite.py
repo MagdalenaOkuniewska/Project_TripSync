@@ -8,22 +8,63 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0006_remove_trip_participants_and_more'),
+        ("trips", "0006_remove_trip_participants_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TripInvite',
+            name="TripInvite",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('status', models.CharField(choices=[('accepted', 'Accepted'), ('pending', 'Pending'), ('declined', 'Declined'), ('expired', 'Expired')], default='pending', max_length=30)),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('expires_at', models.DateTimeField(blank=True, null=True)),
-                ('responded', models.DateTimeField(blank=True, null=True)),
-                ('invited_by', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='send_trip_invites', to=settings.AUTH_USER_MODEL)),
-                ('trip', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='invites', to='trips.trip')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='trip_invites', to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("accepted", "Accepted"),
+                            ("pending", "Pending"),
+                            ("declined", "Declined"),
+                            ("expired", "Expired"),
+                        ],
+                        default="pending",
+                        max_length=30,
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("expires_at", models.DateTimeField(blank=True, null=True)),
+                ("responded", models.DateTimeField(blank=True, null=True)),
+                (
+                    "invited_by",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="send_trip_invites",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "trip",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="invites",
+                        to="trips.trip",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="trip_invites",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
     ]

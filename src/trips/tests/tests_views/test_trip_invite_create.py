@@ -6,29 +6,27 @@ from django.urls import reverse
 
 User = get_user_model()
 
+
 class TripInviteCreateViewTestCase(TestCase):
     def setUp(self):
-        self.owner = User.objects.create_user(
-            username='owner',
-            password='testpass123'
-        )
+        self.owner = User.objects.create_user(username="owner", password="testpass123")
 
         self.trip = Trip.objects.create(
-            title='My Trip',
-            destination='Example',
-            start_date='2026-07-01',
-            end_date='2026-07-14',
-            owner=self.owner
+            title="My Trip",
+            destination="Example",
+            start_date="2026-07-01",
+            end_date="2026-07-14",
+            owner=self.owner,
         )
 
-        self.url = reverse('trip-invite-create', kwargs={'trip_id': self.trip.pk})
+        self.url = reverse("trip-invite-create", kwargs={"trip_id": self.trip.pk})
 
     def login_user(self):
-        self.client.login(username='owner', password='testpass123')
+        self.client.login(username="owner", password="testpass123")
 
     def test_requires_login(self):
         response = self.client.get(self.url)
-        expected_url = f'{reverse('login')}?next={self.url}'
+        expected_url = f"{reverse('login')}?next={self.url}"
 
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, expected_url)
@@ -39,35 +37,37 @@ class TripInviteCreateViewTestCase(TestCase):
         response = self.client.get(self.url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'trips/trip_invite_create.html')
+        self.assertTemplateUsed(response, "trips/trip_invite_create.html")
 
     def test_owner_can_invite(self):
         self.login_user()
 
         self.invited_user = User.objects.create_user(
-            username='invited',
-            password='testpass123'
+            username="invited", password="testpass123"
         )
 
-        data = {'user': self.invited_user.pk}
+        data = {"user": self.invited_user.pk}
 
         response = self.client.post(self.url, data)
 
-        self.assertRedirects(response, reverse('trip-detail', kwargs={'pk': self.trip.pk}))
-        self.assertTrue(TripInvite.objects.filter(trip = self.trip, user=self.invited_user).exists())
+        self.assertRedirects(
+            response, reverse("trip-detail", kwargs={"pk": self.trip.pk})
+        )
+        self.assertTrue(
+            TripInvite.objects.filter(trip=self.trip, user=self.invited_user).exists()
+        )
 
     def test_invite_has_correct_info(self):
         self.login_user()
 
         self.invited_user = User.objects.create_user(
-            username='invited',
-            password='testpass123'
+            username="invited", password="testpass123"
         )
 
-        data = {'user': self.invited_user.pk}
+        data = {"user": self.invited_user.pk}
         self.client.post(self.url, data)
 
-        invite = TripInvite.objects.get(trip = self.trip,user=self.invited_user)
+        invite = TripInvite.objects.get(trip=self.trip, user=self.invited_user)
 
         self.assertEqual(invite.trip, self.trip)
         self.assertEqual(invite.invited_by, self.owner)
@@ -77,51 +77,42 @@ class TripInviteCreateViewTestCase(TestCase):
         self.login_user()
 
         self.invited_user = User.objects.create_user(
-            username='invited',
-            password='testpass123'
+            username="invited", password="testpass123"
         )
 
-        data = {'user': self.invited_user.pk}
+        data = {"user": self.invited_user.pk}
         response = self.client.post(self.url, data)
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertIn('Invitation sent', str(messages[0]))
+        self.assertIn("Invitation sent", str(messages[0]))
 
     def test_non_owner_cannot_invite(self):
         self.other_user = User.objects.create_user(
-            username='otheruser',
-            password='otheruser'
+            username="otheruser", password="otheruser"
         )
-        self.client.login(username='otheruser', password='otheruser')
+        self.client.login(username="otheruser", password="otheruser")
 
         self.invited_user = User.objects.create_user(
-            username='invited',
-            password='testpass123'
+            username="invited", password="testpass123"
         )
 
-        data = {'user': self.invited_user.pk}
+        data = {"user": self.invited_user.pk}
 
         self.client.post(self.url, data)
 
-        self.assertFalse(TripInvite.objects.filter(trip=self.trip, user=self.invited_user).exists())
+        self.assertFalse(
+            TripInvite.objects.filter(trip=self.trip, user=self.invited_user).exists()
+        )
 
     def test_shows_unsuccessful_message_after_invite(self):
         self.other_user = User.objects.create_user(
-            username='otheruser',
-            password='otheruser'
+            username="otheruser", password="otheruser"
         )
-        self.client.login(username='otheruser', password='otheruser')
+        self.client.login(username="otheruser", password="otheruser")
 
         response = self.client.get(self.url)
 
         messages = list(get_messages(response.wsgi_request))
         self.assertEqual(len(messages), 1)
-        self.assertIn('Only the Trip Owner', str(messages[0]))
-
-
-
-
-
-
-
+        self.assertIn("Only the Trip Owner", str(messages[0]))

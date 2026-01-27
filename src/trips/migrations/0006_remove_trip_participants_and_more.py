@@ -7,21 +7,21 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0005_alter_tripmember_status_alter_tripmember_user'),
+        ("trips", "0005_alter_tripmember_status_alter_tripmember_user"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='trip',
-            name='participants',
+            model_name="trip",
+            name="participants",
         ),
         migrations.AlterUniqueTogether(
-            name='tripmember',
-            unique_together={('trip', 'user')},
+            name="tripmember",
+            unique_together={("trip", "user")},
         ),
         migrations.RemoveField(
-            model_name='tripmember',
-            name='status',
+            model_name="tripmember",
+            name="status",
         ),
     ]

@@ -13,24 +13,29 @@ from django.db.models import Q
 class RegistrationView(CreateView):
     model = CustomUser
     form_class = UserRegistrationForm
-    template_name = 'users/register.html'
-    success_url = reverse_lazy('login')
+    template_name = "users/register.html"
+    success_url = reverse_lazy("login")
 
     def form_valid(self, form):
         form.save()
-        username = form.cleaned_data.get('username')
-        messages.success(self.request, f'Account created for {username}')
+        username = form.cleaned_data.get("username")
+        messages.success(self.request, f"Account created for {username}")
         return super().form_valid(form)
 
-class ProfileView(LoginRequiredMixin, ListView ):
+
+class ProfileView(LoginRequiredMixin, ListView):
     model = Trip
-    template_name = 'users/profile.html'
-    context_object_name = 'user_trips'
+    template_name = "users/profile.html"
+    context_object_name = "user_trips"
 
     def get_queryset(self):
         user = self.request.user
-        return Trip.objects.filter(Q(owner=user) | Q(members__user=user)
-                                   ).select_related('owner').distinct().order_by('start_date')
+        return (
+            Trip.objects.filter(Q(owner=user) | Q(members__user=user))
+            .select_related("owner")
+            .distinct()
+            .order_by("start_date")
+        )
 
     def get_context_data(self, **kwargs):
         """Passing 'response' to HTML template"""
@@ -42,25 +47,33 @@ class ProfileView(LoginRequiredMixin, ListView ):
         all_trips = self.get_queryset()
 
         # expired:
-        TripInvite.objects.filter(user=user, status='pending', expires_at__lte=timezone.now()).update(status='expired')
+        TripInvite.objects.filter(
+            user=user, status="pending", expires_at__lte=timezone.now()
+        ).update(status="expired")
 
-        all_invites = TripInvite.objects.filter(user=user, status='pending').order_by('-created_at')
-        declined_invites = TripInvite.objects.filter(user=user, status='declined').select_related('trip').order_by('-responded_at')
+        all_invites = TripInvite.objects.filter(user=user, status="pending").order_by(
+            "-created_at"
+        )
+        declined_invites = (
+            TripInvite.objects.filter(user=user, status="declined")
+            .select_related("trip")
+            .order_by("-responded_at")
+        )
 
-        context['upcoming_trips'] = all_trips.filter(start_date__gte=today)
-        context['past_trips'] = all_trips.filter(end_date__lt=today)
-        context['declined_invites'] = declined_invites
-        context['pending_invites'] = all_invites
+        context["upcoming_trips"] = all_trips.filter(start_date__gte=today)
+        context["past_trips"] = all_trips.filter(end_date__lt=today)
+        context["declined_invites"] = declined_invites
+        context["pending_invites"] = all_invites
 
-        days_since_joined = (timezone.now() - user.date_joined).days +1
+        days_since_joined = (timezone.now() - user.date_joined).days + 1
 
         if user.last_login:
-            days_since_last_login = (timezone.now() - user.last_login).days +1
+            days_since_last_login = (timezone.now() - user.last_login).days + 1
         else:
             days_since_last_login = 0
 
-        context['days_since_joined'] = days_since_joined
-        context['days_since_last_login'] = days_since_last_login
+        context["days_since_joined"] = days_since_joined
+        context["days_since_last_login"] = days_since_last_login
 
         return context
 
@@ -68,27 +81,28 @@ class ProfileView(LoginRequiredMixin, ListView ):
 class ProfileEditView(LoginRequiredMixin, UpdateView):
     model = CustomUser
     form_class = UserUpdateForm
-    template_name = 'users/edit_profile.html'
-    success_url = reverse_lazy('profile')
+    template_name = "users/edit_profile.html"
+    success_url = reverse_lazy("profile")
 
     def get_object(self, queryset=None):
         return self.request.user
 
     def form_valid(self, form):
-        messages.success(self.request, f'Your account has been updated!')
+        messages.success(self.request, "Your account has been updated!")
         return super().form_valid(form)
 
 
 class CustomPasswordResetView(PasswordResetView):
     form_class = CustomPasswordResetForm
-    template_name = 'users/password_reset.html'
-    email_template_name = 'users/password_reset_email.html'
-    subject_template_name = 'users/password_reset_subject.txt'
-    success_url = reverse_lazy('password_reset_done')
+    template_name = "users/password_reset.html"
+    email_template_name = "users/password_reset_email.html"
+    subject_template_name = "users/password_reset_subject.txt"
+    success_url = reverse_lazy("password_reset_done")
 
     def form_valid(self, form):
-        email = form.cleaned_data.get('email')
-        messages.success(self.request, f'Password reset email was sent to "{email}". Please check your inbox and follow instructions.')
+        email = form.cleaned_data.get("email")
+        messages.success(
+            self.request,
+            f'Password reset email was sent to "{email}". Please check your inbox and follow instructions.',
+        )
         return super().form_valid(form)
-
-

@@ -12,53 +12,45 @@ User = get_user_model()
 class TripInviteModelTest(TestCase):
     def setUp(self):
         self.owner = User.objects.create_user(
-            username='owner',
-            email='email@example.com',
-            password='testpass123'
+            username="owner", email="email@example.com", password="testpass123"
         )
 
         self.trip = Trip.objects.create(
-            title='Trip',
-            destination='Example',
-            start_date='2026-07-01',
-            end_date='2026-07-14',
-            owner=self.owner
+            title="Trip",
+            destination="Example",
+            start_date="2026-07-01",
+            end_date="2026-07-14",
+            owner=self.owner,
         )
 
         self.invited_user = User.objects.create_user(
-            username='inviteduser',
-            email='other@example.com',
-            password='testpass123'
+            username="inviteduser", email="other@example.com", password="testpass123"
         )
 
     def test_default_status_is_pending(self):
         invite = TripInvite.objects.create(
-            trip=self.trip,
-            user=self.invited_user,
-            invited_by=self.owner
+            trip=self.trip, user=self.invited_user, invited_by=self.owner
         )
 
-        self.assertEqual(invite.status, 'pending')
+        self.assertEqual(invite.status, "pending")
 
     def test_str_method(self):
-        invite= TripInvite.objects.create(
-            trip=self.trip,
-            user=self.invited_user,
-            invited_by = self.owner
+        invite = TripInvite.objects.create(
+            trip=self.trip, user=self.invited_user, invited_by=self.owner
         )
         result = str(invite)
 
-        self.assertEqual(result, 'inviteduser invited to Trip - pending')
+        self.assertEqual(result, "inviteduser invited to Trip - pending")
 
     def test_duplicates_raises_error(self):
         TripInvite.objects.create(
-            trip=self.trip,
-            user=self.invited_user,
-            invited_by=self.owner
+            trip=self.trip, user=self.invited_user, invited_by=self.owner
         )
 
         with self.assertRaises(IntegrityError):
-            TripInvite.objects.create(trip=self.trip, user=self.invited_user, invited_by=self.owner)
+            TripInvite.objects.create(
+                trip=self.trip, user=self.invited_user, invited_by=self.owner
+            )
 
     def test_is_expired_returns_false_before_expires_at(self):
         tomorrow = timezone.now() + timedelta(days=1)
@@ -66,7 +58,7 @@ class TripInviteModelTest(TestCase):
             trip=self.trip,
             user=self.invited_user,
             invited_by=self.owner,
-            expires_at = tomorrow
+            expires_at=tomorrow,
         )
 
         self.assertEqual(invite.is_expired(), False)
@@ -78,7 +70,7 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=expired_date,
-            status='pending'
+            status="pending",
         )
 
         self.assertEqual(invite.is_expired(), True)
@@ -90,7 +82,7 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=expired_date,
-            status='accepted'
+            status="accepted",
         )
 
         self.assertEqual(invite.is_expired(), False)
@@ -101,11 +93,11 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=timezone.now() + timedelta(days=1),
-            status='pending'
+            status="pending",
         )
 
         invite.accept()
-        self.assertEqual(invite.status, 'accepted')
+        self.assertEqual(invite.status, "accepted")
 
     def test_accept_raises_error_when_not_pending(self):
         invite = TripInvite.objects.create(
@@ -113,7 +105,7 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=timezone.now() + timedelta(days=1),
-            status='accepted'
+            status="accepted",
         )
 
         with self.assertRaises(ValidationError):
@@ -126,7 +118,7 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=expired_date,
-            status='pending'
+            status="pending",
         )
 
         with self.assertRaises(ValidationError):
@@ -150,7 +142,9 @@ class TripInviteModelTest(TestCase):
         )
 
         invite.accept()
-        self.assertTrue(TripMember.objects.filter(trip=self.trip, user=self.invited_user).exists())
+        self.assertTrue(
+            TripMember.objects.filter(trip=self.trip, user=self.invited_user).exists()
+        )
 
     def test_decline_raises_error_when_not_pending(self):
         invite = TripInvite.objects.create(
@@ -158,7 +152,7 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=timezone.now() + timedelta(days=1),
-            status='accepted'
+            status="accepted",
         )
 
         with self.assertRaises(ValidationError):
@@ -170,11 +164,11 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=timezone.now() + timedelta(days=1),
-            status='pending'
+            status="pending",
         )
 
         invite.decline()
-        self.assertEqual(invite.status, 'declined')
+        self.assertEqual(invite.status, "declined")
 
     def test_decline_sets_responded_at(self):
         invite = TripInvite.objects.create(
@@ -193,20 +187,20 @@ class TripInviteModelTest(TestCase):
             user=self.invited_user,
             invited_by=self.owner,
             expires_at=expired_date,
-            status='pending'
+            status="pending",
         )
 
         result = invite.mark_expired()
 
         self.assertTrue(result)
-        self.assertEqual(invite.status, 'expired')
+        self.assertEqual(invite.status, "expired")
 
     def test_cancel_raises_error_when_not_pending(self):
         invite = TripInvite.objects.create(
             trip=self.trip,
             user=self.invited_user,
             invited_by=self.owner,
-            status='accepted'
+            status="accepted",
         )
 
         with self.assertRaises(ValidationError):
@@ -217,9 +211,11 @@ class TripInviteModelTest(TestCase):
             trip=self.trip,
             user=self.invited_user,
             invited_by=self.owner,
-            status='pending'
+            status="pending",
         )
 
         invite.cancel()
 
-        self.assertFalse(TripMember.objects.filter(trip=self.trip, user=self.invited_user).exists())
+        self.assertFalse(
+            TripMember.objects.filter(trip=self.trip, user=self.invited_user).exists()
+        )

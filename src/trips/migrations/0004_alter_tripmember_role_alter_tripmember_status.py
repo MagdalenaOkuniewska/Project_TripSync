@@ -6,18 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('trips', '0003_alter_trip_owner_tripmember'),
+        ("trips", "0003_alter_trip_owner_tripmember"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tripmember',
-            name='role',
-            field=models.CharField(blank=True, choices=[('owner', 'Owner'), ('member', 'Member')], default='member', max_length=50, null=True),
+            model_name="tripmember",
+            name="role",
+            field=models.CharField(
+                blank=True,
+                choices=[("owner", "Owner"), ("member", "Member")],
+                default="member",
+                max_length=50,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='tripmember',
-            name='status',
-            field=models.CharField(blank=True, choices=[('owner', 'Owner'), ('member', 'Member')], default='member', max_length=30),
+            model_name="tripmember",
+            name="status",
+            field=models.CharField(
+                blank=True,
+                choices=[("owner", "Owner"), ("member", "Member")],
+                default="member",
+                max_length=30,
+            ),
         ),
     ]
