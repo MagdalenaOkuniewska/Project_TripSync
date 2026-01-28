@@ -119,20 +119,11 @@
                             <small class="fw-bold d-block mb-1">{{ item.trip.title }}</small>
 
                             <div class="d-flex justify-content-between align-items-center">
-                                <small class="text-muted" style="font-size: 0.8rem;">
+                                <small class="text-muted" style="font-size: 0.9rem;">
                                     <i class="fas fa-sticky-note"></i> {{ item.private_notes_count }} note{{ item.private_notes_count|pluralize }}
                                 </small>
 
-                                <div class="d-flex gap-1">
-                                    {% if item.private_notes_count > 0 %}
-                                        <a href="{% url 'note-list' item.trip.pk %}" class="btn btn-sm btn-outline-dark px-2 py-0" style="font-size: 0.75rem;">
-                                            View
-                                        </a>
-                                    {% endif %}
-                                    <a href="{% url 'note-create' item.trip.pk %}" class="btn btn-sm px-2 py-0" style="background-color: rgba(63,106,71,0.74); color: white; font-size: 0.75rem;">
-                                        Add
-                                    </a>
-                                </div>
+
                             </div>
                         </li>
                     {% endfor %}
