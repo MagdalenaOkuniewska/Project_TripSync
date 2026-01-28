@@ -14,8 +14,8 @@
                     <i class="fas fa-sticky-note"></i> Notes - Trip: {{ trip.title }}
                 </h5>
             </div>
-            <a href="{% url 'note-create' trip.id %}" class="btn btn-success">
-                <i class="fas fa-plus"></i> Add Note
+            <a href="{% url 'note-create' trip.id %}" class="btn" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
+            <i class="fas fa-plus"></i> Add Note
             </a>
         </div>
     </div>
@@ -106,7 +106,7 @@
 
 <!-- Back Button -->
 <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-outline-secondary">
-    <i class="fas fa-arrow-left"></i> Back to Trip
+    <i class="fas fa-arrow-left"></i> Back to Trip Details
 </a>
 
 </div>

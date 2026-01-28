@@ -3,6 +3,7 @@ from django.shortcuts import redirect
 from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ..models import Trip
+from notes.models import Note
 
 
 class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -23,3 +24,16 @@ class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             return super().handle_no_permission()
         messages.error(self.request, "You are not allowed to view this Trip.")
         return redirect("trip-list")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["private_notes_count"] = Note.objects.filter(
+            trip=self.object, user=self.request.user, note_type="private"
+        ).count()
+
+        context["shared_notes_count"] = Note.objects.filter(
+            trip=self.object, note_type="shared"
+        ).count()
+
+        return context
