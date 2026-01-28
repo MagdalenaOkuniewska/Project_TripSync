@@ -38,88 +38,112 @@
     </div>
 </div>
 
-
-<!-- PROFILE INFO -->
+<!-- PENDING INVITATIONS - KLIKALNE -->
 <div class="d-flex justify-content-center gap-3 mb-5">
-
-
-    <!-- PENDING INVITATIONS - KLIKALNE -->
     <a href="{% url 'trip-invite-list' %}" class="text-decoration-none">
-    <div class="card shadow" style="width: 195px; cursor: pointer; transition: transform 0.2s; border: 2px solid rgba(220, 53, 69, 0.3);">
-        <div class="card-body text-center py-3">
-            <i class="fas fa-envelope" style="font-size: 1.8rem; color: rgba(255,212,64,0.98);"></i>
-            <p class="mb-0 mt-2 small text-dark">
-                <strong>Pending invitations:</strong> {{ pending_invites|length }}
-            </p>
+        <div class="card shadow" style="width: 195px; cursor: pointer; transition: transform 0.2s; border: 2px solid rgba(220, 53, 69, 0.3);">
+            <div class="card-body text-center py-3">
+                <i class="fas fa-envelope" style="font-size: 1.8rem; color: rgba(255,212,64,0.98);"></i>
+                <p class="mb-0 mt-2 small text-dark">
+                    <strong>Pending invitations:</strong> {{ pending_invites|length }}
+                </p>
+            </div>
         </div>
-    </div>
-</a>
+    </a>
 </div>
 
-
-<!-- UPCOMING TRIPS -->
+<!-- UPCOMING TRIPS & MY PRIVATE NOTES - OBOK SIEBIE -->
 <div class="d-flex justify-content-center mb-5">
-    <div class="card shadow" style="width: 800px;">
+    <div class="row g-4" style="width: 840px;">
+        <!-- UPCOMING TRIPS - 75% -->
+        <div class="col-9">
+            <div class="card shadow h-100">
+                <div class="card-body">
+                    <h5 class="text-capitalize mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                        <i class="fas fa-plane-departure"></i> Upcoming Trips:
+                        <span style="color: rgb(41,147,59); font-weight: 900;">{{ upcoming_trips|length }}</span>
+                    </h5>
+
+                    {% if upcoming_trips %}
+                        <ul class="list-group list-group-flush">
+                            {% for trip in upcoming_trips %}
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1 text-capitalize" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
+                                                {{ trip.title }}
+                                            </h6>
+                                            <small class="text-muted d-block">
+                                                <i class="fas fa-map-marker-alt"></i> {{ trip.destination }} |
+                                                <i class="fas fa-calendar"></i>
+                                                {{ trip.start_date|date:"M d, Y" }} – {{ trip.end_date|date:"M d, Y" }}
+                                            </small>
+                                            {% if trip.owner == user %}
+                                                <span class="badge bg-warning text-dark mt-1">Owner</span>
+                                            {% else %}
+                                                <span class="badge bg-success mt-1">Member</span>
+                                            {% endif %}
+                                        </div>
+
+                                        <div class="d-flex gap-2">
+                                            <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white;">
+                                                View Details
+                                            </a>
+                                            <a href="{% url 'note-list' trip.pk %}" class="btn btn-sm btn-outline-dark">
+                                                <i class="fas fa-sticky-note"></i> See Notes
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No upcoming trips.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- MY PRIVATE NOTES - 25% -->
+<div class="col-3">
+    <div class="card shadow h-100">
         <div class="card-body">
+            <h6 class="mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-lock"></i> Private Notes
+            </h6>
 
-            <h5 class="text-capitalize mb-4"
-                style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                <i class="fas fa-plane-departure"></i> Upcoming Confirmed Trips: <span style="color: rgb(41,147,59); font-weight: 900;">{{ upcoming_trips|length }}</span>
-            </h5>
-
-            {% if upcoming_trips %}
+            {% if upcoming_trips_with_notes %}
                 <ul class="list-group list-group-flush">
+                    {% for item in upcoming_trips_with_notes %}
+                        <li class="list-group-item px-0 py-2">
+                            <small class="fw-bold d-block mb-1">{{ item.trip.title }}</small>
 
-                    {% for trip in upcoming_trips %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-
-                            <div>
-                                <h6 class="mb-1 text-capitalize"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                                    {{ trip.title }}
-                                </h6>
-                                <small class="text-muted">
-                                    <i class="fas fa-map-marker-alt"></i> {{ trip.destination }} |
-                                    <i class="fas fa-calendar"></i>
-                                    {{ trip.start_date|date:"M d, Y" }} – {{ trip.end_date|date:"M d, Y" }}
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted" style="font-size: 0.9rem;">
+                                    <i class="fas fa-sticky-note"></i> {{ item.private_notes_count }} note{{ item.private_notes_count|pluralize }}
                                 </small>
+
+
                             </div>
-
-                            <div class="d-flex gap-2 align-items-center">
-                                {% if trip.owner == user %}
-                                    <span class="badge bg-warning text-dark">Owner</span>
-                                {% else %}
-                                    <span class="badge bg-success">Member</span>
-                                {% endif %}
-
-                                <a href="{% url 'trip-detail' trip.pk %}"
-                                   class="btn btn-sm"
-                                   style="background-color: rgba(63,106,71,0.74); color: white;">
-                                    View
-                                </a>
-                            </div>
-
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-muted mb-0">No upcoming trips.</p>
+                <p class="text-muted mb-0 small">No Notes</p>
             {% endif %}
-
         </div>
     </div>
 </div>
-
+    </div>
+</div>
 <!-- PAST TRIPS & DECLINED INVITATIONS  -->
-<div class="d-flex justify-content-center gap-4">
-
+<div class="d-flex justify-content-center gap-4 mb-5">
     <!-- PAST TRIPS -->
     <div class="card shadow" style="width: 400px;">
         <div class="card-body">
-
-            <h5 class="text-capitalize mb-4"
-                style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                <i class="fas fa-clock"></i> Past Trips: <span style="color: rgb(41,147,59); font-weight: 900;">{{ past_trips|length }}</span>
+            <h5 class="text-capitalize mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-clock"></i> Past Trips:
+                <span style="color: rgb(41,147,59); font-weight: 900;">{{ past_trips|length }}</span>
             </h5>
 
             {% if past_trips %}
@@ -127,8 +151,7 @@
                     {% for trip in past_trips %}
                         <li class="list-group-item px-0">
                             <div class="mb-2">
-                                <h6 class="mb-1 text-capitalize"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
+                                <h6 class="mb-1 text-capitalize" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
                                     {{ trip.title }}
                                 </h6>
                                 <small class="text-muted d-block">
@@ -140,27 +163,24 @@
                                 </small>
                             </div>
 
-                            <a href="{% url 'trip-detail' trip.pk %}"
-                               class="btn btn-sm btn-outline-secondary w-100">
+                            <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm btn-outline-secondary w-100">
                                 View
                             </a>
                         </li>
                     {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-muted mb-0">No past trips.</p>
+                <p class="text-muted mb-0">No past trips</p>
             {% endif %}
-
         </div>
     </div>
 
     <!-- DECLINED INVITATIONS -->
     <div class="card shadow" style="width: 400px;">
         <div class="card-body">
-
-            <h5 class="text-capitalize mb-4"
-                style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                <i class="fas fa-times-circle"></i> Declined: <span style="color: rgba(216,50,81,0.98); font-weight: 900;">{{ declined_invites |length }}</span>
+            <h5 class="text-capitalize mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-times-circle"></i> Declined Trips:
+                <span style="color: rgba(216,50,81,0.98); font-weight: 900;">{{ declined_invites|length }}</span>
             </h5>
 
             {% if declined_invites %}
@@ -168,8 +188,7 @@
                     {% for invite in declined_invites %}
                         <li class="list-group-item px-0">
                             <div class="mb-2">
-                                <h6 class="mb-1 text-capitalize"
-                                    style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
+                                <h6 class="mb-1 text-capitalize" style="font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.9rem;">
                                     {{ invite.trip.title }}
                                 </h6>
                                 <small class="text-muted d-block">
@@ -191,10 +210,8 @@
             {% else %}
                 <p class="text-muted mb-0">No declined invitations.</p>
             {% endif %}
-
         </div>
     </div>
-
 </div>
 
 <style>

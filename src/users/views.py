@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
 from .models import CustomUser
 from trips.models import Trip, TripInvite
+from notes.models import Note
 from django.db.models import Q
 
 
@@ -74,6 +75,17 @@ class ProfileView(LoginRequiredMixin, ListView):
 
         context["days_since_joined"] = days_since_joined
         context["days_since_last_login"] = days_since_last_login
+
+        upcoming_trips_with_notes = []
+        for trip in context["upcoming_trips"]:
+            private_notes_count = Note.objects.filter(
+                trip=trip, user=user, note_type="private"
+            ).count()
+            upcoming_trips_with_notes.append(
+                {"trip": trip, "private_notes_count": private_notes_count}
+            )
+
+        context["upcoming_trips_with_notes"] = upcoming_trips_with_notes
 
         return context
 

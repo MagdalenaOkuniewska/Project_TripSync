@@ -6,7 +6,7 @@ User = get_user_model()
 
 
 class Note(models.Model):
-    NOTE_TYPE_CHOICES = [("private", "Private"), ("public", "Public")]
+    NOTE_TYPE_CHOICES = [("private", "Private"), ("shared", "Shared")]
 
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="notes")
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name="notes")
@@ -24,7 +24,7 @@ class Note(models.Model):
         ordering = ["-created_at"]
 
     def is_owner(self, user):
-        return self.owner == user
+        return self.user == user
 
     def can_edit(self, user):
         return self.is_owner(user)
