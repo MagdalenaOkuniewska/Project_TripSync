@@ -24,7 +24,7 @@ class PackingItemAdmin(admin.ModelAdmin):
         "item_name",
         "item_quantity",
         "is_packed",
-        "packing_lists",
+        "packing_list",
         "added_by",
         "packed_by",
     )

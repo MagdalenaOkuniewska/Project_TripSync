@@ -11,6 +11,7 @@ urlpatterns = [
     path("trips/", include("trips.urls")),
     path("trips/", include("notes.urls")),
     path("notes/", include("notes.urls")),
+    path("packing/", include("packing_lists.urls")),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

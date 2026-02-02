@@ -29,8 +29,6 @@ class PackingItemTemplate(models.Model):
 
 # trip może mieć tylko 1 shared liste, stworzona TYLKO przez owner
 # trip może mieć tylko 1 private list per member
-
-
 class PackingList(models.Model):
     LIST_TYPE_CHOICES = [("private", "Private"), ("shared", "Shared")]
 
