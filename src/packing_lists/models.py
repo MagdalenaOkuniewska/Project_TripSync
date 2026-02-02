@@ -12,6 +12,21 @@ class PackingListTemplate(models.Model):
     name = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    def apply_to_trip(self, trip, user):
+        packing_list = PackingList.objects.create(
+            trip=trip, user=user, liast_type="private"
+        )
+
+        for item in self.item_templates.all():
+            PackingItem.objects.create(
+                packing_list=packing_list,
+                item_name=item.name,
+                item_quantity=item.quantity,
+                added_by=user,
+            )
+
+            return packing_list
+
     def __str__(self):
         return self.name
 
