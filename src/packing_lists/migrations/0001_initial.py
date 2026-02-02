@@ -95,11 +95,11 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 (
-                    "packing_list",
+                    "packing_lists",
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="items",
-                        to="packing_list.packinglist",
+                        to="packing_lists.packinglist",
                     ),
                 ),
             ],
@@ -150,7 +150,7 @@ class Migration(migrations.Migration):
                     models.ForeignKey(
                         on_delete=django.db.models.deletion.CASCADE,
                         related_name="item_templates",
-                        to="packing_list.packinglisttemplate",
+                        to="packing_lists.packinglisttemplate",
                     ),
                 ),
             ],
