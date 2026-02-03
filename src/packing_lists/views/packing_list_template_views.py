@@ -11,13 +11,14 @@ from django.views.generic import (
     UpdateView,
 )
 
-# jak Apply taki template?
+# jaki view aby Apply taki template? PackingListTemplate.apply_to_trip
+# template=getobjector404,trip tez,packing_list = template.apply_to_trip(trip, request.user)
 
 
 class PackingListTemplateListView(LoginRequiredMixin, ListView):  # templates usera
     model = PackingListTemplate
     template_name = "packing_lists/packing_list_template_lists.html"
-    context_object_name = "packing_templates"
+    context_object_name = "list_templates"
 
     def get_queryset(self):
         return PackingListTemplate.objects.filter(user=self.request.user).order_by(
@@ -40,7 +41,7 @@ class PackingListTemplateCreateView(LoginRequiredMixin, CreateView):
 
     def get_success_url(self):
         return reverse_lazy(
-            "packing-list-template-detail", kwargs={"pk": self.object.pk}
+            "packing-list-template-details", kwargs={"pk": self.object.pk}
         )
 
 
@@ -48,7 +49,7 @@ class PackingListTemplateDetailView(
     LoginRequiredMixin, UserPassesTestMixin, DetailView
 ):
     model = PackingListTemplate
-    template_name = "packing_lists/packing_list_template.html"
+    template_name = "packing_lists/packing_list_template_details.html"
     context_object_name = "packing_template"
 
     def test_func(self):
@@ -79,7 +80,7 @@ class PackingListTemplateUpdateView(
 
     def get_success_url(self):
         return reverse_lazy(
-            "packing-list-template-detail", kwargs={"pk": self.object.pk}
+            "packing-list-template-details", kwargs={"pk": self.object.pk}
         )
 
     def handle_no_permission(self):
@@ -89,7 +90,9 @@ class PackingListTemplateUpdateView(
         return redirect("packing-list-template-list")
 
 
-class PackingListTemplateDeleteView(LoginRequiredMixin, DeleteView):
+class PackingListTemplateDeleteView(
+    LoginRequiredMixin, UserPassesTestMixin, DeleteView
+):
     model = PackingListTemplate
     template_name = "packing_lists/packing_list_template_delete.html"
     success_url = reverse_lazy("packing-list-template-list")

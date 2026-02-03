@@ -3,11 +3,12 @@
 # from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 # from django.shortcuts import redirect, get_object_or_404
 # from django.views.generic import CreateView, UpdateView, DeleteView
-# from ..models import PackingListTemplate, PackingItemTemplate
+# from ..models import PackingListTemplate, PackingList, PackingItem
 
 
-# PackingItemCreateView
-# PackingItemUpdateView
-# PackingItemDeleteView
+# PackingListCreateView
+# PackingListUpdateView
+# PackingListDetailView
+# PackingListDeleteView
 
-# jak zrobic checkbox?
+# Lista list - w Trip detail

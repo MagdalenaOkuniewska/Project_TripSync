@@ -14,7 +14,7 @@ class PackingListTemplate(models.Model):
 
     def apply_to_trip(self, trip, user):
         packing_list = PackingList.objects.create(
-            trip=trip, user=user, liast_type="private"
+            trip=trip, user=user, list_type="private"
         )
 
         for item in self.item_templates.all():
