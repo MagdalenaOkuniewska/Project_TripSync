@@ -1,3 +1,100 @@
-# from django.urls import path
-#
-# urlpatterns = []
+from django.urls import path
+from .views.packing_list_template_views import (
+    PackingListTemplateListView,
+    PackingListTemplateCreateView,
+    PackingListTemplateDetailView,
+    PackingListTemplateUpdateView,
+    PackingListTemplateDeleteView,
+    ApplyPackingListTemplateView,
+)
+from .views.packing_item_template_views import (
+    PackingItemTemplateCreateView,
+    PackingItemTemplateUpdateView,
+    PackingItemTemplateDeleteView,
+)
+from .views.packing_list_views import (
+    PackingListDetailView,
+    PackingListCreateView,
+    PackingListDeleteView,
+)
+from .views.packing_item_views import (
+    PackingItemCreateView,
+    PackingItemUpdateView,
+    PackingItemDeleteView,
+)
+
+urlpatterns = [
+    path(
+        "templates/",
+        PackingListTemplateListView.as_view(),
+        name="packing-list-template-list",
+    ),
+    path(
+        "templates/create/",
+        PackingListTemplateCreateView.as_view(),
+        name="packing-list-template-create",
+    ),
+    path(
+        "templates/<int:pk>/",
+        PackingListTemplateDetailView.as_view(),
+        name="packing-list-template-details",
+    ),
+    path(
+        "templates/<int:pk>/update/",
+        PackingListTemplateUpdateView.as_view(),
+        name="packing-list-template-update",
+    ),
+    path(
+        "templates/<int:pk>/delete/",
+        PackingListTemplateDeleteView.as_view(),
+        name="packing-list-template-delete",
+    ),
+    path(
+        "templates/<int:template_pk>/apply/<int:trip_pk>/",
+        ApplyPackingListTemplateView.as_view(),
+        name="apply-template-to-trip",
+    ),
+    path(
+        "templates/<int:template_pk>/items/create/",
+        PackingItemTemplateCreateView.as_view(),
+        name="packing-item-template-create",
+    ),
+    path(
+        "template-items/<int:pk>/update/",
+        PackingItemTemplateUpdateView.as_view(),
+        name="packing-item-template-update",
+    ),
+    path(
+        "template-items/<int:pk>/delete/",
+        PackingItemTemplateDeleteView.as_view(),
+        name="packing-item-template-delete",
+    ),
+    path(
+        "trips/<int:trip_pk>/lists/create/",
+        PackingListCreateView.as_view(),
+        name="packing-list-create",
+    ),
+    path(
+        "lists/<int:pk>/", PackingListDetailView.as_view(), name="packing-list-details"
+    ),
+    path(
+        "lists/<int:pk>/delete/",
+        PackingListDeleteView.as_view(),
+        name="packing-list-delete",
+    ),
+    path(
+        "lists/<int:list_pk>/items/create/",
+        PackingItemCreateView.as_view(),
+        name="packing-item-create",
+    ),
+    path(
+        "items/<int:pk>/update/",
+        PackingItemUpdateView.as_view(),
+        name="packing-item-update",
+    ),
+    path(
+        "items/<int:pk>/delete/",
+        PackingItemDeleteView.as_view(),
+        name="packing-item-delete",
+    ),
+]

@@ -13,7 +13,7 @@ from trips.models import Trip
 # 1. user klika create new packing list lub use template packing list w trip details
 # 2. nowa lista -> pusta -> dodaje items => TUTAJ CREATE
 # 3. z template -> aplikuje do tripu => jakiś Apply View? w packing list template views
-# Lista list (shared zrobiona przez ownera i prywatna) - w Trip detail
+# Lista list (shared zrobiona przez ownera i prywatna) - w Trip detail => HTML
 
 
 class PackingListDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
