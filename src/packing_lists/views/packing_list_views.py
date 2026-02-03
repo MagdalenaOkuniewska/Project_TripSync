@@ -1,8 +1,9 @@
 from django.urls import reverse_lazy
+from django.db.models import Q
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect, get_object_or_404
-from django.views.generic import DeleteView, DetailView, View
+from django.views.generic import DeleteView, DetailView, View, ListView
 from ..models import PackingList
 from trips.models import Trip
 
@@ -64,6 +65,37 @@ class PackingListCreateView(LoginRequiredMixin, View):
 
         messages.success(request, f'Packing list for "{trip.title}" created!')
         return redirect("packing-list-details", pk=packing_list.pk)
+
+
+class PackingListsForTripView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """Shows ALL packing lists for a trip (private + shared)"""
+
+    model = PackingList
+    template_name = "packing_lists/packing_lists_for_trip.html"
+    context_object_name = "packing_lists"
+
+    def test_func(self):
+        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+        return self.trip.is_owner(self.request.user) or self.trip.is_participant(
+            self.request.user
+        )
+
+    def get_queryset(self):
+        return PackingList.objects.filter(
+            Q(trip=self.trip, user=self.request.user, list_type="private")
+            | Q(trip=self.trip, list_type="shared")
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["trip"] = self.trip
+        return context
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        messages.error(self.request, "You cannot view lists for this trip.")
+        return redirect("trip-list")
 
 
 class PackingListDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

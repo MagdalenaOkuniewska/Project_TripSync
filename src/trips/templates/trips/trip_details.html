@@ -82,8 +82,7 @@
                     <div class="d-flex flex-column gap-2">
                         <!-- View all lists -->
                         {% if private_list or shared_list %}
-                            <a href="{% if private_list %}{% url 'packing-list-details' private_list.pk %}{% else %}{% url 'packing-list-details' shared_list.pk %}{% endif %}"
-                               class="btn btn-sm btn-outline-dark">
+                            <a href="{% url 'packing-lists-for-trip' trip.pk %}" class="btn btn-sm btn-outline-dark">
                                 <i class="fas fa-suitcase"></i> View All Lists
                             </a>
                         {% endif %}

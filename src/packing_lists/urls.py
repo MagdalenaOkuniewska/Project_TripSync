@@ -16,6 +16,7 @@ from .views.packing_list_views import (
     PackingListDetailView,
     PackingListCreateView,
     PackingListDeleteView,
+    PackingListsForTripView,
 )
 from .views.packing_item_views import (
     PackingItemCreateView,
@@ -73,6 +74,11 @@ urlpatterns = [
         "trips/<int:trip_pk>/lists/create/",
         PackingListCreateView.as_view(),
         name="packing-list-create",
+    ),
+    path(
+        "trips/<int:trip_pk>/lists/",
+        PackingListsForTripView.as_view(),
+        name="packing-lists-for-trip",
     ),
     path(
         "lists/<int:pk>/", PackingListDetailView.as_view(), name="packing-list-details"
