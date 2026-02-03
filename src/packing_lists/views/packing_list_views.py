@@ -1,14 +1,102 @@
-# from django.urls import reverse_lazy
-# from django.contrib import messages
-# from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-# from django.shortcuts import redirect, get_object_or_404
-# from django.views.generic import CreateView, UpdateView, DeleteView
-# from ..models import PackingListTemplate, PackingList, PackingItem
+from django.urls import reverse_lazy
+from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.shortcuts import redirect, get_object_or_404
+from django.views.generic import DeleteView, DetailView, View
+from ..models import PackingList
+from trips.models import Trip
 
 
-# PackingListCreateView
-# PackingListUpdateView
-# PackingListDetailView
-# PackingListDeleteView
+# Private list: każdy uczestnik tripu ma swoją
+# Shared list: tylko JEDNA na trip, tworzy ją owner
+# Lista NIE edytowalna (trip/user/type) => tylko itemy sie edytuje =  "Add Item" Na stronie Packing List Details (w HTML template)
+# 1. user klika create new packing list lub use template packing list w trip details
+# 2. nowa lista -> pusta -> dodaje items => TUTAJ CREATE
+# 3. z template -> aplikuje do tripu => jakiś Apply View? w packing list template views
+# Lista list (shared zrobiona przez ownera i prywatna) - w Trip detail
 
-# Lista list - w Trip detail
+
+class PackingListDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
+    model = PackingList
+    template_name = "packing_lists/packing_list_details.html"
+    context_object_name = "packing_list"
+
+    def test_func(self):
+        packing_list = self.get_object()
+
+        if packing_list.list_type == "private":
+            return packing_list.user == self.request.user
+        else:
+            return packing_list.trip.is_participant(self.request.user)
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        messages.error(self.request, "You cannot view this list.")
+        return redirect("trip-list")
+
+
+class PackingListCreateView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """Creates an empty Packing List."""
+
+    def test_func(self):
+        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+
+        if not self.trip.is_participant(self.request.user):
+            return False
+
+        has_list = PackingList.objects.filter(
+            trip=self.trip, user=self.request.user
+        ).exists()
+        if has_list:
+            return False
+
+        return True
+
+    def post(self, request, *args, **kwargs):
+        packing_list = PackingList.objects.create(
+            trip=self.trip,
+            user=self.request.user,
+            list_type="private",
+        )
+
+        messages.success(self.request, "Packing list created.")
+        return redirect("packing-list-details", pk=packing_list.pk)
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        messages.error(self.request, "You cannot create a packing list to this trip.")
+        return redirect("trip-list")
+
+
+class PackingListDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = PackingList
+    template_name = "packing_lists/packing_list_delete.html"
+
+    def test_func(self):
+        packing_list = self.get_object()
+
+        if packing_list.list_type == "private":
+            return packing_list.user == self.request.user
+        else:
+            return packing_list.trip.is_owner(self.request.user)
+
+    def delete(self, request, *args, **kwargs):
+        self.trip_pk = self.get_object().trip.pk
+        return super().delete(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        messages.success(
+            self.request, f'Packing list for "{self.object.trip.title}" deleted!'
+        )
+        return super().form_valid(form)
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        messages.error(self.request, "You cannot delete this packing list.")
+        return redirect("trip-list")
+
+    def get_success_url(self):
+        return reverse_lazy("trip-detail", kwargs={"pk": self.trip_pk})

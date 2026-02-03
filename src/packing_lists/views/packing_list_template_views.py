@@ -1,18 +1,19 @@
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect
-from ..models import PackingListTemplate
+from django.shortcuts import redirect, get_object_or_404
+from ..models import PackingListTemplate, PackingList
+from trips.models import Trip
 from django.views.generic import (
     ListView,
     DetailView,
     CreateView,
     DeleteView,
     UpdateView,
+    View,
 )
 
-# jaki view aby Apply taki template? PackingListTemplate.apply_to_trip
-# template=getobjector404,trip tez,packing_list = template.apply_to_trip(trip, request.user)
+# jaki view aby Apply taki template? template.apply_to_trip. cos zrobilam pod Create
 
 
 class PackingListTemplateListView(LoginRequiredMixin, ListView):  # templates usera
@@ -43,6 +44,45 @@ class PackingListTemplateCreateView(LoginRequiredMixin, CreateView):
         return reverse_lazy(
             "packing-list-template-details", kwargs={"pk": self.object.pk}
         )
+
+
+class ApplyPackingListTemplateView(LoginRequiredMixin, UserPassesTestMixin, View):
+    """Apply Packing List Template to the Trip - copies items"""
+
+    def test_func(self):
+        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+        self.packing_list_template = get_object_or_404(
+            PackingListTemplate, pk=self.kwargs["template_pk"]
+        )
+
+        if not self.trip.is_participant(self.request.user):
+            return False
+
+        has_list = PackingList.objects.filter(
+            trip=self.trip, user=self.request.user
+        ).exists()
+        if has_list:
+            return False
+
+        return True
+
+    def post(self, request, *args, **kwargs):
+        packing_list = self.packing_list_template.apply_to_trip(
+            trip=self.trip, user=self.request.user
+        )
+
+        messages.success(
+            self.request,
+            f'Template "{self.packing_list_template.name}" applied to "{self.trip.title}".',
+        )
+
+        return redirect("packing-list-details", pk=packing_list.pk)
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        messages.error(self.request, "You cannot apply this template.")
+        return redirect("trip-list")
 
 
 class PackingListTemplateDetailView(

@@ -76,7 +76,7 @@ class PackingItemUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView)
         if not self.request.user.is_authenticated:
             return super().handle_no_permission()
         messages.error(self.request, "You cannot update this item.")
-        return redirect("packing-list-list")
+        return redirect("trip-list")
 
 
 class PackingItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
