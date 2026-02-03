@@ -49,7 +49,7 @@ class PackingItemTemplateUpdateView(
     LoginRequiredMixin, UserPassesTestMixin, UpdateView
 ):
     model = PackingItemTemplate
-    template_name = "packing_lists/packing_item_template_update.html"
+    template_name = "packing_lists/packing_item_template_create.html"
     fields = ["name", "quantity"]
 
     def test_func(self):

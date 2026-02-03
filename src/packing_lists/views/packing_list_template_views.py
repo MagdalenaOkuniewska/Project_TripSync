@@ -67,7 +67,7 @@ class PackingListTemplateUpdateView(
     LoginRequiredMixin, UserPassesTestMixin, UpdateView
 ):
     model = PackingListTemplate
-    template_name = "packing_lists/packing_list_template_update.html"
+    template_name = "packing_lists/packing_list_template_create.html"
     fields = ["name"]
 
     def test_func(self):
