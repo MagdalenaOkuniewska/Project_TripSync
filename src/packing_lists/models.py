@@ -65,6 +65,12 @@ class PackingList(models.Model):
     class Meta:
         ordering = ["list_type", "-created_at"]
 
+    def __str__(self):
+        if self.list_type == "private" and self.user:
+            return f"{self.user.username} {self.trip.title} list"
+        else:
+            return f"Shared {self.trip.title} list"
+
 
 class PackingItem(models.Model):
     packing_list = models.ForeignKey(
@@ -101,3 +107,6 @@ class PackingItem(models.Model):
             self.packed_by = user
 
         self.save()
+
+    def __str__(self):
+        return f"{self.item_name} x{self.item_quantity}"
