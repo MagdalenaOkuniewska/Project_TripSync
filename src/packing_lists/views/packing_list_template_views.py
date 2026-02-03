@@ -55,7 +55,10 @@ class ApplyPackingListTemplateView(LoginRequiredMixin, UserPassesTestMixin, View
             PackingListTemplate, pk=self.kwargs["template_pk"]
         )
 
-        if not self.trip.is_participant(self.request.user):
+        if not (
+            self.trip.is_owner(self.request.user)
+            or self.trip.is_participant(self.request.user)
+        ):
             return False
 
         has_list = PackingList.objects.filter(

@@ -27,7 +27,9 @@ class PackingListDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
         if packing_list.list_type == "private":
             return packing_list.user == self.request.user
         else:
-            return packing_list.trip.is_participant(self.request.user)
+            return packing_list.trip.is_owner(
+                self.request.user
+            ) or packing_list.trip.is_participant(self.request.user)
 
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
@@ -36,38 +38,32 @@ class PackingListDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView)
         return redirect("trip-list")
 
 
-class PackingListCreateView(LoginRequiredMixin, UserPassesTestMixin, View):
+class PackingListCreateView(LoginRequiredMixin, View):
     """Creates an empty Packing List."""
 
-    def test_func(self):
-        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
-
-        if not self.trip.is_participant(self.request.user):
-            return False
-
-        has_list = PackingList.objects.filter(
-            trip=self.trip, user=self.request.user
-        ).exists()
-        if has_list:
-            return False
-
-        return True
-
     def post(self, request, *args, **kwargs):
+        trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+
+        if not (trip.is_owner(request.user) or trip.is_participant(request.user)):
+            messages.error(request, "You cannot create a packing list for this trip.")
+            return redirect("trip-list")
+
+        existing_private_list = PackingList.objects.filter(
+            trip=trip, user=request.user, list_type="private"
+        ).first()
+
+        if existing_private_list:
+            messages.warning(request, "You already have a packing list for this trip.")
+            return redirect("packing-list-details", pk=existing_private_list.pk)
+
         packing_list = PackingList.objects.create(
-            trip=self.trip,
-            user=self.request.user,
+            trip=trip,
+            user=request.user,
             list_type="private",
         )
 
-        messages.success(self.request, "Packing list created.")
+        messages.success(request, f'Packing list for "{trip.title}" created!')
         return redirect("packing-list-details", pk=packing_list.pk)
-
-    def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            return super().handle_no_permission()
-        messages.error(self.request, "You cannot create a packing list to this trip.")
-        return redirect("trip-list")
 
 
 class PackingListDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
