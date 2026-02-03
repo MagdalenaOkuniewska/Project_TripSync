@@ -16,7 +16,7 @@ class PackingItemTemplateCreateView(
     def test_func(self):
         self.packing_template = get_object_or_404(
             PackingListTemplate, pk=self.kwargs["template_pk"]
-        )  # TODO WSTAWIĆ DO URLS
+        )
         return self.packing_template.user == self.request.user
 
     def form_valid(self, form):  # nie ma pola user

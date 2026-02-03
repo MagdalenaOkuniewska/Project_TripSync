@@ -15,9 +15,7 @@ class PackingItemCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView)
     fields = ["item_name", "item_quantity"]
 
     def test_func(self):
-        self.packing_list = get_object_or_404(
-            PackingList, pk=self.kwargs["list_pk"]
-        )  # TODO WSTAWIĆ DO URLS
+        self.packing_list = get_object_or_404(PackingList, pk=self.kwargs["list_pk"])
 
         if self.packing_list.list_type == "private":
             return self.packing_list.user == self.request.user
