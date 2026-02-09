@@ -42,6 +42,7 @@ INSTALLED_EXTENSIONS = [
     "users.apps.UsersConfig",
     "trips.apps.TripConfig",
     "notes.apps.NotesConfig",
+    "packing_lists.apps.PackingListConfig",
     "crispy_forms",
     "crispy_bootstrap4",
     "silk",

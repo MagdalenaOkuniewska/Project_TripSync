@@ -6,3 +6,11 @@ class TripForm(forms.ModelForm):
     class Meta:
         model = Trip
         fields = ["title", "destination", "start_date", "end_date"]
+        widgets = {
+            "start_date": forms.DateInput(
+                attrs={"type": "date", "class": "form-control"}
+            ),
+            "end_date": forms.DateInput(
+                attrs={"type": "date", "class": "form-control"}
+            ),
+        }

@@ -1,7 +1,9 @@
 {% extends 'dashboard/base.html' %}
 
 {% load crispy_forms_tags %}
+
 {% block content %}
+<div class="container" style="max-width: 500px; margin-top: 50px;">
     <div class="content-section">
         <form method="POST">
             {% csrf_token %}
@@ -20,8 +22,9 @@
         </form>
         <div class="border-top pt-3">
             <small class="text-muted">
-                Does not have an account? <a class="ml-2" href="{%url 'register' %}">Register</a>
+                Does not have an account? <a class="ml-2" href="{% url 'register' %}">Register</a>
             </small>
         </div>
     </div>
+</div>
 {% endblock %}

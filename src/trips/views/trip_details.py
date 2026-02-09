@@ -36,4 +36,18 @@ class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             trip=self.object, note_type="shared"
         ).count()
 
+        has_private_list = self.object.packing_lists.filter(
+            user=self.request.user, list_type="private"
+        ).exists()
+
+        private_list = self.object.packing_lists.filter(
+            user=self.request.user, list_type="private"
+        ).first()
+
+        shared_list = self.object.packing_lists.filter(list_type="shared").first()
+
+        context["has_private_list"] = has_private_list
+        context["private_list"] = private_list
+        context["shared_list"] = shared_list
+
         return context

@@ -1,14 +1,14 @@
 {% extends 'dashboard/base.html' %}
 {% load crispy_forms_tags %}
 
-{% block title %}{% if form.instance.pk %}Edit Trip{% else %}Create Trip{% endif %} - TripSync{% endblock %}
+{% block title %}{% if form.instance.pk %}Edit Template{% else %}Create Template{% endif %} - TripSync{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 600px;">
     <div class="card shadow">
         <div class="card-body p-4">
             <h2 class="text-center text-uppercase mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                {% if form.instance.pk %}Edit Trip{% else %}Create New Trip{% endif %}
+                {% if form.instance.pk %}Edit Packing Template{% else %}Create Packing Template{% endif %}
             </h2>
 
             <form method="POST">
@@ -19,23 +19,23 @@
 
                 <div class="d-flex gap-2 mt-4">
                     <button type="submit" style="background-color: rgba(63,106,71,0.74); color: white; border: none; padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase; flex: 1;">
-                        {% if form.instance.pk %}Update Trip{% else %}Create Trip{% endif %}
+                        {% if form.instance.pk %}Update Template{% else %}Create Template{% endif %}
                     </button>
-                    <a href="{% url 'trip-list' %}" class="btn btn-outline-secondary" style="padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                    <a href="{% url 'packing-list-template-list' %}" class="btn btn-outline-secondary" style="padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
                         Cancel
                     </a>
                 </div>
             </form>
 
-            <!-- DELETE BUTTON -->
+            <!-- DELETE BUTTON (tylko przy edit!) -->
             {% if form.instance.pk %}
                 <hr class="my-4">
                 <div class="text-center">
                     <p class="text-muted mb-3">
-                        <small>Want to delete this trip permanently?</small>
+                        <small>Want to delete this template permanently?</small>
                     </p>
-                    <a href="{% url 'trip-delete' form.instance.pk %}" class="btn btn-outline-danger" style="padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
-                        <i class="fas fa-trash"></i> Delete Trip
+                    <a href="{% url 'packing-list-template-delete' form.instance.pk %}" class="btn btn-outline-danger" style="padding: 12px 40px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+                        <i class="fas fa-trash"></i> Delete Template
                     </a>
                 </div>
             {% endif %}
