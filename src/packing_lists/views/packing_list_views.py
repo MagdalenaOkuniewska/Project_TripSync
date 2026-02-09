@@ -198,8 +198,8 @@ class SavePackingListAsTemplateView(LoginRequiredMixin, UserPassesTestMixin, Vie
         for item in packing_list.items.all():
             PackingItemTemplate.objects.create(
                 template=template,
-                name=item.item_name,  # ✅ POPRAWIONE!
-                quantity=item.item_quantity,  # ✅ POPRAWIONE!
+                name=item.item_name,
+                quantity=item.item_quantity,
             )
             item_count += 1
 
