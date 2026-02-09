@@ -1,0 +1,80 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}{{ note.title }} - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px; margin: 0 auto;">  <!-- ← Zmniejszone z 900px na 700px -->
+
+    <!-- Note Details -->
+    <div class="card shadow mb-4">
+        <div class="card-body p-4">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h4 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">  <!-- ← h4 zamiast h3 -->
+                        {{ note.title }}
+                    </h4>
+                    <div class="mb-2">
+                        {% if note.note_type == 'private' %}
+                            <span class="badge bg-secondary">
+                                <i class="fas fa-lock"></i> Private
+                            </span>
+                        {% else %}
+                            <span class="badge bg-success">
+                                <i class="fas fa-users"></i> Shared
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if note.user == user %}
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'note-edit' note.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <a href="{% url 'note-delete' note.pk %}" class="btn btn-sm btn-outline-danger">
+                            <i class="fas fa-trash"></i> Delete
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <hr>
+
+            <!-- Content -->
+            <div class="mb-4">
+                <h6 class="text-muted mb-2">Content:</h6>
+                <p style="white-space: pre-wrap;">{{ note.content }}</p>
+            </div>
+
+            <!-- Metadata -->
+<div class="row">
+    <div class="col-md-6">
+        <p class="text-muted mb-2 small">  <!-- ← Dodano 'small' -->
+            <i class="fas fa-user"></i> <strong>Created by:</strong> {{ note.user.username }}
+        </p>
+        <p class="text-muted mb-2 small">  <!-- ← Dodano 'small' -->
+            <i class="fas fa-suitcase"></i> <strong>Trip:</strong>
+            <a href="{% url 'trip-detail' note.trip.pk %}">{{ note.trip.title }}</a>
+        </p>
+    </div>
+    <div class="col-md-6">
+        <p class="text-muted mb-2 small">  <!-- ← Dodano 'small' -->
+            <i class="fas fa-clock"></i> <strong>Created:</strong> {{ note.created_at|date:"M d, Y H:i" }}
+        </p>
+        {% if note.updated_at != note.created_at %}
+            <p class="text-muted mb-2 small">  <!-- ← Dodano 'small' -->
+                <i class="fas fa-edit"></i> <strong>Last updated:</strong> {{ note.updated_at|date:"M d, Y H:i" }}
+            </p>
+        {% endif %}
+    </div>
+</div>
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <a href="{% url 'note-list' note.trip.pk %}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Notes
+    </a>
+
+</div>
+{% endblock %}

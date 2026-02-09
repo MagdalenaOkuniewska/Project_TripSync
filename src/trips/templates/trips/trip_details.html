@@ -9,16 +9,16 @@
 
     <!-- Trip Header -->
     <div class="card shadow mb-4">
-        <div class="card-body p-4">
+        <div class="card-body p-3">
             <div class="d-flex justify-content-between align-items-start">
                 <div>
-                    <h2 class="text-uppercase mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                    <h3 class=" mb-2" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">  <!-- mb-2 zamiast mb-3 -->
                         {{ trip.title }}
-                    </h2>
-                    <p class="text-muted mb-2">
+                    </h3>
+                    <p class="text-muted mb-1">
                         <i class="fas fa-map-marker-alt"></i> {{ trip.destination }}
                     </p>
-                    <p class="text-muted mb-2">
+                    <p class="text-muted mb-1">
                         <i class="fas fa-calendar"></i>
                         {{ trip.start_date|date:"M d, Y" }} - {{ trip.end_date|date:"M d, Y" }}
                     </p>
@@ -28,66 +28,102 @@
                     </p>
                 </div>
 
-                {% if trip.owner == user %}
-                    <div class="d-flex gap-2">
+                <!-- Trip buttons -->
+                <div class="d-flex gap-2">
+                    {% if trip.owner == user %}
                         <a href="{% url 'trip-update' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
-                            <i class="fas fa-edit"></i> Edit
+                            <i class="fas fa-edit"></i> Edit Trip
                         </a>
                         <a href="{% url 'trip-delete' trip.pk %}" class="btn btn-sm btn-outline-danger">
-                            <i class="fas fa-trash"></i> Delete
+                            <i class="fas fa-trash"></i> Delete Trip
                         </a>
-                    </div>
-                {% endif %}
+                    {% endif %}
+                    <a href="{% url 'note-create' trip.pk %}" class="btn btn-sm btn-outline-dark">  <!-- outline-dark zamiast zielonego -->
+                    <i class="fas fa-plus"></i> Add Note
+                    </a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Members -->
-    <div class="card shadow mb-4">
-        <div class="card-body p-4">
-            <!-- ZMIANA 1: Klikalna sekcja Members -->
-            <a href="{% url 'trip-member-list' trip.pk %}" class="text-decoration-none text-dark d-block mb-3">
-                <h4 class="text-uppercase mb-0" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                    <i class="fas fa-users"></i> Members ({{ trip.members.count }})
-                    <i class="fas fa-chevron-right ms-2 small"></i>
-                </h4>
-            </a>
+    <!-- Members + Notes Row - 2/3 + 1/3 -->
+    <div class="row mb-4">
+        <!-- Members - 2/3 -->
+        <div class="col-md-8">
+            <div class="card shadow h-100">
+                <div class="card-body p-3">
+                    <a href="{% url 'trip-member-list' trip.pk %}" class="text-decoration-none text-dark d-block mb-3">
+                        <h5 class="mb-0" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">  <!-- h5 zamiast h4 -->
+                            <i class="fas fa-users"></i> Members ({{ trip.members.count }})
+                            <i class="fas fa-chevron-right ms-2 small"></i>
+                        </h5>
+                    </a>
 
-            {% if trip.members.exists %}
-                <div class="list-group">
-                    {% for member in trip.members.all %}
-                        <div class="list-group-item d-flex justify-content-between align-items-center py-2">
-                            <div>
-                                <strong>{{ member.user.username }}</strong>
-                                {% if member.role == 'owner' %}
-                                    <span class="badge bg-primary ms-2">Owner</span>
-                                {% endif %}
-                                <small class="text-muted d-block">
-                                    Joined {{ member.joined_at|date:"M d, Y" }}
-                                </small>
-                            </div>
-                            <span class="badge" style="background-color: {% if member.status == 'active' %}#28a745{% elif member.status == 'pending' %}#ffc107{% else %}#dc3545{% endif %};">
-                                {{ member.get_status_display }}
-                            </span>
+                    {% if trip.members.exists %}
+                        <div class="list-group">
+                            {% for member in trip.members.all|slice:":4" %}
+                                <div class="list-group-item d-flex justify-content-between align-items-center py-2">
+                                    <div>
+                                        <strong>{{ member.user.username }}</strong>
+                                        {% if member.role == 'owner' %}
+                                            <span class="badge bg-primary ms-2">Owner</span>
+                                        {% endif %}
+                                    </div>
+                                    <span class="badge {% if member.role == 'owner' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                        {{ member.get_role_display }}
+                                    </span>
+                                </div>
+                            {% endfor %}
                         </div>
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p class="text-muted mb-0">No members yet.</p>
-            {% endif %}
+                        {% if trip.members.count > 4 %}
+                            <p class="text-muted mt-2 mb-0 small">And {{ trip.members.count|add:"-4" }} more...</p>
+                        {% endif %}
+                    {% else %}
+                        <p class="text-muted mb-0">No members yet.</p>
+                    {% endif %}
 
-            <!-- ZMIANA 2: Działający link Invite Members -->
-            {% if trip.owner == user %}
-                <a href="{% url 'trip-invite-create' trip.pk %}" class="btn btn-sm btn-outline-primary mt-3">
-                    <i class="fas fa-user-plus"></i> Invite Members
+                    {% if trip.owner == user %}
+                        <a href="{% url 'trip-invite-create' trip.pk %}" class="btn btn-sm btn-outline-primary mt-3">
+                            <i class="fas fa-user-plus"></i> Invite Members
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Notes - 1/3 -->
+        <div class="col-md-4">
+            <div class="card shadow h-100">
+                <div class="card-body p-3">
+                    <h5 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                        <i class="fas fa-sticky-note"></i> Notes
+                    </h5>
+
+              <div class="mb-3">
+                <p class="mb-1 small">
+                    <i class="fas fa-lock"></i> <strong>Private notes:</strong> {{ private_notes_count }}
+                </p>
+                <p class="mb-0 small">
+                    <i class="fas fa-users"></i> <strong>Shared notes:</strong> {{ shared_notes_count }}
+                </p>
+            </div>
+
+            <div class="d-flex flex-column gap-2">
+                <a href="{% url 'note-list' trip.pk %}" class="btn btn-sm btn-outline-dark">
+                    <i class="fas fa-sticky-note"></i> View All Notes
                 </a>
-            {% endif %}
+                <a href="{% url 'note-create' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
+                    <i class="fas fa-plus"></i> Add Note
+                </a>
+            </div>
+                </div>
         </div>
     </div>
+</div>
 
     <!-- Back Button -->
     <a href="{% url 'trip-list' %}" class="btn btn-outline-secondary">
-        <i class="fas fa-arrow-left"></i> Back to Trips
+        <i class="fas fa-arrow-left"></i> Back to Trips List
     </a>
 </div>
 {% endblock %}
