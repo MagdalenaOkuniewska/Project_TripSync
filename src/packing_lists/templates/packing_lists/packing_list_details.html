@@ -27,20 +27,159 @@
                 <div class="list-group mb-3">
                     {% for item in packing_list.items.all %}
                         <div class="list-group-item py-2">
-                            <span style="font-size: 1.2rem;">{% if item.is_packed %}✅{% else %}⬜{% endif %}</span>
-                            <strong>{{ item.item_name }}</strong>
-                            <span class="text-muted">x{{ item.item_quantity }}</span>
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div class="flex-grow-1">
+                                    <input type="checkbox"
+                                           class="form-check-input me-2 packed-checkbox"
+                                           data-item-id="{{ item.pk }}"
+                                           {% if item.is_packed %}checked{% endif %}
+                                           {% if packing_list.list_type == 'shared' and item.is_packed %}disabled{% endif %}
+                                           style="cursor: pointer; width: 1.2rem; height: 1.2rem;">
+                                    <strong>{{ item.item_name }}</strong>
+                                    <span class="text-muted">x{{ item.item_quantity }}</span>
+                                </div>
+                                <div>
+                                    <a href="{% url 'packing-item-update' item.pk %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'packing-item-delete' item.pk %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Informacje o added_by i packed_by (tylko dla shared) -->
+{% if packing_list.list_type == 'shared' %}
+    <div class="ms-4" style="font-size: 0.75rem; color: #6c757d;">
+        {% if item.added_by %}
+            <span><i class="fas fa-user-plus"></i> Added by: {{ item.added_by.username }}</span>
+
+        {% if item.packed_by %}
+            <span class="ms-3" style="color: #198754;"><i class="fas fa-user-check"></i> Packed by: {{ item.packed_by.username }}</span>
+        {% endif %}
+    </div>
+{% endif %}
+            {% endif %}
                         </div>
                     {% endfor %}
                 </div>
             {% else %}
-                <p class="text-muted small">No items yet.</p>
+                <p class="text-muted small">No items yet. Click "Add Item" to get started!</p>
             {% endif %}
 
-            <a href="{% url 'trip-detail' packing_list.trip.pk %}" class="btn btn-sm btn-outline-secondary">
-                <i class="fas fa-arrow-left"></i> Back to Trip
-            </a>
+            <!-- Przyciski akcji -->
+            <div class="d-flex gap-2 flex-wrap">
+                <!-- Add Item -->
+                <a href="{% url 'packing-item-create' list_pk=packing_list.pk %}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Add Item
+                </a>
+
+                <!-- Save as Template (tylko dla private list) -->
+                {% if packing_list.list_type == 'private' and packing_list.user == user %}
+                    <button type="button" class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#saveAsTemplateModal">
+                        <i class="fas fa-save"></i> Save as Template
+                    </button>
+                {% endif %}
+
+                <!-- Back to Trip -->
+                <a href="{% url 'trip-detail' packing_list.trip.pk %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Trip
+                </a>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal: Save as Template -->
+{% if packing_list.list_type == 'private' and packing_list.user == user %}
+<div class="modal fade" id="saveAsTemplateModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form method="POST" action="{% url 'save-packing-list-as-template' packing_list.pk %}">
+                {% csrf_token %}
+                <div class="modal-header">
+                    <h5 class="modal-title">Save as Template</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small mb-3">
+                        This will create a new template with {{ packing_list.items.count }} items from this list.
+                    </p>
+                    <label for="template_name" class="form-label">Template Name</label>
+                    <input type="text" class="form-control" id="template_name" name="template_name" placeholder="e.g., Beach Trip 2026" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-sm btn-success">
+                        <i class="fas fa-save"></i> Save Template
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll('.packed-checkbox');
+
+    // Sprawdź czy to shared list
+    const isSharedList = document.querySelector('h4').textContent.includes('Team Packing List');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            // If disabled - ignore
+            if (this.disabled) return;
+
+            const itemId = this.dataset.itemId;
+            const isPacked = this.checked;
+
+            fetch(`/packing/item/${itemId}/toggle-packed/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ is_packed: isPacked })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    console.log('Item updated successfully');
+
+                    // Disable checkbox TYLKO dla shared list
+                    if (data.is_packed && isSharedList) {
+                        this.disabled = true;
+                    }
+                } else {
+                    // Revert the changes if error
+                    this.checked = !isPacked;
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.checked = !isPacked;
+                alert('Error updating item');
+            });
+        });
+    });
+});
+</script>
 {% endblock %}

@@ -23,7 +23,11 @@ class Trip(models.Model):
 
     def save(self, *args, **kwargs):
         self.validate_dates()
+        is_new = self.pk is None
         super().save(*args, **kwargs)
+
+        if is_new:
+            TripMember.objects.create(trip=self, user=self.owner, role="owner")
 
     def is_owner(self, user):
         return self.owner == user

@@ -87,22 +87,32 @@
                             </a>
                         {% endif %}
 
-                        <!-- New list buttons - OBOK SIEBIE -->
+                        <!-- New PRIVATE list buttons -->
                         {% if not has_private_list %}
                             <div class="d-flex gap-2">
                                 <!-- New empty list -->
                                 <form method="POST" action="{% url 'packing-list-create' trip.pk %}" class="flex-fill">
                                     {% csrf_token %}
                                     <button type="submit" class="btn btn-sm w-100" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
-                                        <i class="fas fa-plus"></i> New List
+                                        <i class="fas fa-plus"></i> My List
                                     </button>
                                 </form>
 
                                 <!-- From template -->
-                                <a href="{% url 'packing-list-template-list' %}" class="btn btn-sm btn-outline-primary flex-fill">
+                                <a href="{% url 'select-template-for-trip' trip.pk %}" class="btn btn-sm btn-outline-primary flex-fill">
                                     <i class="fas fa-book"></i> Use Template
                                 </a>
                             </div>
+                        {% endif %}
+
+                        <!-- Create TEAM list -->
+                        {% if trip.owner == user and not shared_list %}
+                            <form method="POST" action="{% url 'packing-list-create-shared' trip.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-sm w-100 btn-outline-success">
+                                    <i class="fas fa-users"></i> Create Team List
+                                </button>
+                            </form>
                         {% endif %}
                     </div>
                 </div>
@@ -129,9 +139,6 @@
                                 <div class="list-group-item d-flex justify-content-between align-items-center py-2">
                                     <div>
                                         <strong>{{ member.user.username }}</strong>
-                                        {% if member.role == 'owner' %}
-                                            <span class="badge bg-primary ms-2">Owner</span>
-                                        {% endif %}
                                     </div>
                                     <span class="badge {% if member.role == 'owner' %}bg-warning text-dark{% else %}bg-success{% endif %}">
                                         {{ member.get_role_display }}

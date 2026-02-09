@@ -13,12 +13,25 @@ from django.views.generic import (
     View,
 )
 
-# jaki view aby Apply taki template? template.apply_to_trip. cos zrobilam pod Create
+
+def user_owns_template(user, template):
+    """Checks if user owns this packing list template"""
+    return template.user == user
+
+
+def user_can_apply_template_to_trip(user, trip):
+    """Checks if user can apply template to trip (owner or participant)"""
+    return trip.is_owner(user) or trip.is_participant(user)
+
+
+def user_already_has_packing_list(user, trip):
+    """Check if user already has a packing list for this trip"""
+    return PackingList.objects.filter(trip=trip, user=user).exists()
 
 
 class PackingListTemplateListView(LoginRequiredMixin, ListView):  # templates usera
     model = PackingListTemplate
-    template_name = "packing_lists/packing_list_template_lists.html"
+    template_name = "packing_lists/packing_list_template_list.html"
     context_object_name = "list_templates"
 
     def get_queryset(self):
@@ -28,6 +41,8 @@ class PackingListTemplateListView(LoginRequiredMixin, ListView):  # templates us
 
 
 class PackingListTemplateCreateView(LoginRequiredMixin, CreateView):
+    """Creates an empty packing list template"""
+
     model = PackingListTemplate
     template_name = "packing_lists/packing_list_template_create.html"
     fields = ["name"]
@@ -47,36 +62,30 @@ class PackingListTemplateCreateView(LoginRequiredMixin, CreateView):
 
 
 class ApplyPackingListTemplateView(LoginRequiredMixin, UserPassesTestMixin, View):
-    """Apply Packing List Template to the Trip - copies items"""
+    """Applies Packing List Template to the Trip - copies items"""
 
     def test_func(self):
-        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
-        self.packing_list_template = get_object_or_404(
-            PackingListTemplate, pk=self.kwargs["template_pk"]
-        )
+        trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
 
-        if not (
-            self.trip.is_owner(self.request.user)
-            or self.trip.is_participant(self.request.user)
-        ):
+        if not user_can_apply_template_to_trip(self.request.user, trip):
             return False
 
-        has_list = PackingList.objects.filter(
-            trip=self.trip, user=self.request.user
-        ).exists()
-        if has_list:
+        if user_already_has_packing_list(self.request.user, trip):
             return False
 
         return True
 
     def post(self, request, *args, **kwargs):
-        packing_list = self.packing_list_template.apply_to_trip(
-            trip=self.trip, user=self.request.user
+        trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+        packing_list_template = get_object_or_404(
+            PackingListTemplate, pk=self.kwargs["template_pk"]
         )
 
+        packing_list = packing_list_template.apply_to_trip(trip=trip, user=request.user)
+
         messages.success(
-            self.request,
-            f'Template "{self.packing_list_template.name}" applied to "{self.trip.title}".',
+            request,
+            f'Template "{packing_list_template.name}" applied to "{trip.title}".',
         )
 
         return redirect("packing-list-details", pk=packing_list.pk)
@@ -88,6 +97,29 @@ class ApplyPackingListTemplateView(LoginRequiredMixin, UserPassesTestMixin, View
         return redirect("trip-list")
 
 
+class SelectTemplateForTripView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    """Shows list of user's templates to apply to a trip"""
+
+    model = PackingListTemplate
+    template_name = "packing_lists/select_template_for_trip.html"
+    context_object_name = "templates"
+
+    def test_func(self):
+        trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+        return user_can_apply_template_to_trip(self.request.user, trip)
+
+    def get_queryset(self):
+        return PackingListTemplate.objects.filter(user=self.request.user).order_by(
+            "name"
+        )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
+        context["trip"] = trip
+        return context
+
+
 class PackingListTemplateDetailView(
     LoginRequiredMixin, UserPassesTestMixin, DetailView
 ):
@@ -97,7 +129,7 @@ class PackingListTemplateDetailView(
 
     def test_func(self):
         template = self.get_object()
-        return template.user == self.request.user
+        return user_owns_template(self.request.user, template)
 
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:
@@ -115,7 +147,7 @@ class PackingListTemplateUpdateView(
 
     def test_func(self):
         template = self.get_object()
-        return template.user == self.request.user
+        return user_owns_template(self.request.user, template)
 
     def form_valid(self, form):
         messages.success(self.request, f'Template "{form.instance.name}" updated!')
@@ -142,7 +174,7 @@ class PackingListTemplateDeleteView(
 
     def test_func(self):
         template = self.get_object()
-        return template.user == self.request.user
+        return user_owns_template(self.request.user, template)
 
     def form_valid(self, form):
         messages.success(self.request, f'Template "{self.object.name}" deleted!')

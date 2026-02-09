@@ -18,15 +18,19 @@ class NoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     template_name = "notes/note_create.html"
     fields = ["title", "content", "note_type"]
 
+    def get_trip_or_404(self):
+        return get_object_or_404(Trip, pk=self.kwargs["trip_id"])
+
     def test_func(self):
-        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_id"])
-        return self.trip.is_owner(self.request.user) or self.trip.is_participant(
+        trip = self.get_trip_or_404()
+
+        return trip.is_owner(self.request.user) or trip.is_participant(
             self.request.user
         )
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        form.instance.trip = self.trip
+        form.instance.trip = self.get_trip_or_404()
 
         messages.success(
             self.request, f'Note "{form.instance.title}" created successfully.'
@@ -38,7 +42,7 @@ class NoteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["trip"] = self.trip
+        context["trip"] = self.get_trip_or_404()
         return context
 
     def handle_no_permission(self):

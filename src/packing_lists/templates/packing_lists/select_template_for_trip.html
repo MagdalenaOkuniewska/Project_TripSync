@@ -1,32 +1,32 @@
 {% extends 'dashboard/base.html' %}
 
-{% block title %}Packing Templates - TripSync{% endblock %}
+{% block title %}Select Template - {{ trip.title }}{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px;">
     <div class="card shadow">
         <div class="card-body p-3">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h4 style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
-                    <i class="fas fa-book"></i> My Packing Templates
-                </h4>
-                <a href="{% url 'packing-list-template-create' %}" class="btn btn-sm btn-success">
-                    <i class="fas fa-plus"></i> Create Template
-                </a>
-            </div>
+            <h4 class="mb-4" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-book"></i> Select Template for "{{ trip.title }}"
+            </h4>
 
-            {% if list_templates %}
+            {% if templates %}
                 <div class="list-group">
-                    {% for template in list_templates %}
-                        <a href="{% url 'packing-list-template-details' template.pk %}" class="list-group-item list-group-item-action">
+                    {% for template in templates %}
+                        <div class="list-group-item">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
                                     <h5 class="mb-1">{{ template.name }}</h5>
                                     <small class="text-muted">{{ template.items.count }} items</small>
                                 </div>
-                                <i class="fas fa-chevron-right"></i>
+                                <form method="POST" action="{% url 'apply-template-to-trip' trip_pk=trip.pk template_pk=template.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
+                                        <i class="fas fa-check"></i> Use This Template
+                                    </button>
+                                </form>
                             </div>
-                        </a>
+                        </div>
                     {% endfor %}
                 </div>
             {% else %}
@@ -38,6 +38,10 @@
                     </a>
                 </div>
             {% endif %}
+
+            <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm btn-outline-secondary mt-3">
+                <i class="fas fa-arrow-left"></i> Back to Trip
+            </a>
         </div>
     </div>
 </div>

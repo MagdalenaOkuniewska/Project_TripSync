@@ -7,6 +7,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
 from .models import CustomUser
 from trips.models import Trip, TripInvite
+from packing_lists.models import PackingList
 from notes.models import Note
 from django.db.models import Q
 
@@ -86,6 +87,20 @@ class ProfileView(LoginRequiredMixin, ListView):
             )
 
         context["upcoming_trips_with_notes"] = upcoming_trips_with_notes
+
+        upcoming_trips_with_packing_lists = []
+        for trip in context["upcoming_trips"]:
+            packing_list = PackingList.objects.filter(
+                trip=trip, user=user, list_type="private"
+            ).first()
+
+            if packing_list:
+                packing_items_count = packing_list.items.count()
+                upcoming_trips_with_packing_lists.append(
+                    {"trip": trip, "packing_items_count": packing_items_count}
+                )
+
+        context["upcoming_trips_with_packing_lists"] = upcoming_trips_with_packing_lists
 
         return context
 

@@ -17,7 +17,7 @@ class PackingListTemplate(models.Model):
             trip=trip, user=user, list_type="private"
         )
 
-        for item in self.item_templates.all():
+        for item in self.items.all():
             PackingItem.objects.create(
                 packing_list=packing_list,
                 item_name=item.name,
@@ -25,7 +25,7 @@ class PackingListTemplate(models.Model):
                 added_by=user,
             )
 
-            return packing_list
+        return packing_list
 
     def __str__(self):
         return self.name
@@ -33,7 +33,7 @@ class PackingListTemplate(models.Model):
 
 class PackingItemTemplate(models.Model):
     template = models.ForeignKey(
-        PackingListTemplate, on_delete=models.CASCADE, related_name="item_templates"
+        PackingListTemplate, on_delete=models.CASCADE, related_name="items"
     )
     name = models.CharField(max_length=100)
     quantity = models.IntegerField(default=1)
@@ -42,8 +42,6 @@ class PackingItemTemplate(models.Model):
         return f"{self.name}: x{self.quantity}"
 
 
-# trip może mieć tylko 1 shared liste, stworzona TYLKO przez owner
-# trip może mieć tylko 1 private list per member
 class PackingList(models.Model):
     LIST_TYPE_CHOICES = [("private", "Private"), ("shared", "Shared")]
 
@@ -53,7 +51,6 @@ class PackingList(models.Model):
     list_type = models.CharField(max_length=20, choices=LIST_TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
 
-    # for private list
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,

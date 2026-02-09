@@ -15,17 +15,17 @@
     <div class="d-flex justify-content-center align-items-start gap-3">
         <!-- CREATE TRIP (left) -->
         <div>
-            <a href="{% url 'trip-create' %}" class="btn" style="background-color: rgba(255,212,64,0.98); color: #100808; padding: 12px 30px; font-weight: bold; border-radius: 5px; text-transform: uppercase;">
+            <a href="{% url 'trip-create' %}" class="btn" style="background-color: rgba(255,212,64,0.98); color: #100808; padding: 8px 20px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.85rem;">
                 <i class="fas fa-plus"></i> Create Trip
             </a>
         </div>
 
         <!-- INVITATIONS BUTTONS (right, stacked) -->
         <div class="d-flex flex-column gap-2">
-            <a href="{% url 'trip-invite-list' %}" class="btn" style="background-color: rgba(63,106,71,0.74); color: white; padding: 8px 25px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.9rem;">
+            <a href="{% url 'trip-invite-list' %}" class="btn" style="background-color: rgba(63,106,71,0.74); color: white; padding: 6px 18px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.75rem;">
                 <i class="fas fa-envelope"></i> My Invitations
             </a>
-            <a href="{% url 'trip-invite-sent' %}" class="btn" style="background-color: rgba(197,172,66,0.98); color: white; padding: 8px 25px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.9rem;">
+            <a href="{% url 'trip-invite-sent' %}" class="btn" style="background-color: rgba(197,172,66,0.98); color: white; padding: 6px 18px; font-weight: bold; border-radius: 5px; text-transform: uppercase; font-size: 0.75rem;">
                 <i class="fas fa-paper-plane"></i> Sent Invitations
             </a>
         </div>
@@ -61,17 +61,25 @@
 
 
                     <div class="mt-auto d-flex flex-column gap-2">
+                        <!-- Row 1: View Details + Edit Trip -->
                         <div class="d-flex gap-2">
                             <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold; flex: 1;">
                                 <i class="fas fa-eye"></i> View Details
                             </a>
+                            <a href="{% url 'trip-update' trip.pk %}" class="btn btn-sm btn-outline-dark" style="flex: 1;">
+                                <i class="fas fa-edit"></i> Edit Trip
+                            </a>
+                        </div>
+
+                        <!-- Row 2: See Notes + See Packing Lists -->
+                        <div class="d-flex gap-2">
                             <a href="{% url 'note-list' trip.pk %}" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
                                 <i class="fas fa-sticky-note"></i> See Notes
                             </a>
+                            <a href="{% url 'packing-lists-for-trip' trip.pk %}" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
+                                <i class="fas fa-suitcase"></i> See Lists
+                            </a>
                         </div>
-                        <a href="{% url 'trip-update' trip.pk %}" class="btn btn-sm btn-outline-dark">
-                            <i class="fas fa-edit"></i> Edit Trip
-                        </a>
                     </div>
                 </div>
             </div>
@@ -109,13 +117,21 @@
                     </p>
 
 
-                    <div class="mt-auto d-flex gap-2">
-                        <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold; flex: 1;">
+                    <div class="mt-auto d-flex flex-column gap-2">
+                        <!-- Row 1: View Details -->
+                        <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm" style="background-color: rgba(63,106,71,0.74); color: white; font-weight: bold;">
                             <i class="fas fa-eye"></i> View Details
                         </a>
-                        <a href="{% url 'note-list' trip.pk %}" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
-                            <i class="fas fa-sticky-note"></i>See Notes
-                        </a>
+
+                        <!-- Row 2: See Notes + See Packing Lists -->
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'note-list' trip.pk %}" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
+                                <i class="fas fa-sticky-note"></i> See Notes
+                            </a>
+                            <a href="{% url 'packing-lists-for-trip' trip.pk %}" class="btn btn-sm btn-outline-secondary" style="flex: 1;">
+                                <i class="fas fa-suitcase"></i> See Lists
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

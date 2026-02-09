@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
@@ -14,6 +14,9 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["trip_id"] = self.kwargs["trip_id"]
+
+        trip = get_object_or_404(Trip, pk=self.kwargs["trip_id"])
+        context["trip"] = trip
         return context
 
     def test_func(self):

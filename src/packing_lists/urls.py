@@ -6,6 +6,7 @@ from .views.packing_list_template_views import (
     PackingListTemplateUpdateView,
     PackingListTemplateDeleteView,
     ApplyPackingListTemplateView,
+    SelectTemplateForTripView,
 )
 from .views.packing_item_template_views import (
     PackingItemTemplateCreateView,
@@ -17,6 +18,9 @@ from .views.packing_list_views import (
     PackingListCreateView,
     PackingListDeleteView,
     PackingListsForTripView,
+    SavePackingListAsTemplateView,
+    PackingListCreateSharedView,
+    toggle_item_packed,
 )
 from .views.packing_item_views import (
     PackingItemCreateView,
@@ -76,12 +80,27 @@ urlpatterns = [
         name="packing-list-create",
     ),
     path(
+        "trips/<int:trip_pk>/create-shared/",
+        PackingListCreateSharedView.as_view(),
+        name="packing-list-create-shared",
+    ),
+    path(
         "trips/<int:trip_pk>/lists/",
         PackingListsForTripView.as_view(),
         name="packing-lists-for-trip",
     ),
     path(
+        "trips/<int:trip_pk>/select-template/",
+        SelectTemplateForTripView.as_view(),
+        name="select-template-for-trip",
+    ),
+    path(
         "lists/<int:pk>/", PackingListDetailView.as_view(), name="packing-list-details"
+    ),
+    path(
+        "lists/<int:pk>/save-as-template/",
+        SavePackingListAsTemplateView.as_view(),
+        name="save-packing-list-as-template",
     ),
     path(
         "lists/<int:pk>/delete/",
@@ -102,5 +121,10 @@ urlpatterns = [
         "items/<int:pk>/delete/",
         PackingItemDeleteView.as_view(),
         name="packing-item-delete",
+    ),
+    path(
+        "item/<int:item_id>/toggle-packed/",
+        toggle_item_packed,
+        name="toggle-item-packed",
     ),
 ]
