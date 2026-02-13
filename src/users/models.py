@@ -5,7 +5,10 @@ from PIL import Image
 
 class CustomUser(AbstractUser):
     avatar = models.ImageField(
-        default="default.jpg", upload_to="profile_pics", blank=True, null=True
+        default="profile_pics/default.jpg",
+        upload_to="profile_pics",
+        blank=True,
+        null=True,
     )
 
     def save(self, *args, **kwargs):

@@ -139,7 +139,7 @@ function getCookie(name) {
 document.addEventListener("DOMContentLoaded", function () {
     const checkboxes = document.querySelectorAll('.packed-checkbox');
 
-    // Sprawdź czy to shared list
+    // check if shared list
     const isSharedList = document.querySelector('h4').textContent.includes('Team Packing List');
 
     checkboxes.forEach(checkbox => {
@@ -163,7 +163,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (data.success) {
                     console.log('Item updated successfully');
 
-                    // Disable checkbox TYLKO dla shared list
+                    // Disable checkbox only for shared list
                     if (data.is_packed && isSharedList) {
                         this.disabled = true;
                     }
