@@ -12,6 +12,7 @@ urlpatterns = [
     path("trips/", include("notes.urls")),
     path("notes/", include("notes.urls")),
     path("packing/", include("packing_lists.urls")),
+    path("shopping-list/", include("shopping_list.urls")),
 ]
 
 urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
