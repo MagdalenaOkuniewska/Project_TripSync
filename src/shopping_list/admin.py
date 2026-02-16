@@ -4,7 +4,7 @@ from .models import ShoppingItem, ShoppingList
 
 @admin.register(ShoppingList)
 class PackingListAdmin(admin.ModelAdmin):
-    list_display = ("id", "trip", "user", "created_at")
+    list_display = ("id", "trip", "created_at")
 
 
 @admin.register(ShoppingItem)
