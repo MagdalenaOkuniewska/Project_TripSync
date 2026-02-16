@@ -34,11 +34,12 @@ class ShoppingListCreateView(LoginRequiredMixin, UserPassesTestMixin, View):
         try:
             shopping_list = trip.shopping_list
             messages.warning(request, "Shopping list already exists for this trip.")
-            return redirect("shopping-list-detail", pk=shopping_list.pk)
+            return redirect("shopping-list-details", pk=shopping_list.pk)
+
         except ShoppingList.DoesNotExist:
             shopping_list = ShoppingList.objects.create(trip=trip)
             messages.success(request, f'Shopping list for "{trip.title}" created!')
-            return redirect("shopping-list-detail", pk=shopping_list.pk)
+            return redirect("shopping-list-details", pk=shopping_list.pk)
 
     def handle_no_permission(self):
         if not self.request.user.is_authenticated:

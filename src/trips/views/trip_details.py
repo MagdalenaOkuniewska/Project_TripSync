@@ -4,6 +4,7 @@ from django.views.generic import DetailView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ..models import Trip
 from notes.models import Note
+from shopping_list.models import ShoppingList
 
 
 class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
@@ -28,6 +29,7 @@ class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        # Notes
         context["private_notes_count"] = Note.objects.filter(
             trip=self.object, user=self.request.user, note_type="private"
         ).count()
@@ -36,6 +38,7 @@ class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
             trip=self.object, note_type="shared"
         ).count()
 
+        # Packing Lists
         has_private_list = self.object.packing_lists.filter(
             user=self.request.user, list_type="private"
         ).exists()
@@ -49,5 +52,13 @@ class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):
         context["has_private_list"] = has_private_list
         context["private_list"] = private_list
         context["shared_list"] = shared_list
+
+        # Shopping List
+        try:
+            context["shopping_list"] = self.object.shopping_list
+            context["has_shopping_list"] = True
+        except ShoppingList.DoesNotExist:
+            context["shopping_list"] = None
+            context["has_shopping_list"] = False
 
         return context

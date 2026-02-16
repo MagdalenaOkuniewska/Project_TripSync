@@ -35,6 +35,12 @@ class Trip(models.Model):
     def is_participant(self, user):
         return self.members.filter(user=user).exists()
 
+    def has_shopping_list(self):
+        try:
+            return self.shopping_list is not None
+        except Exception:
+            return False
+
     def __str__(self):
         return f"{self.title} - {self.destination}"
 
