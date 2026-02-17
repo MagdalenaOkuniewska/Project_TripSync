@@ -143,12 +143,17 @@ class SearchUsersView(LoginRequiredMixin, ListView):
     def get_queryset(self):
         query = self.request.GET.get("q")  # w navbar name="q"
 
-        if query:
-            return CustomUser.objects.filter(username__icontains=query).exclude(
-                pk=self.request.user.pk
-            )
-        else:
+        if not query:
             return CustomUser.objects.none()
+
+        results = CustomUser.objects.filter(
+            Q(username__icontains=query)
+            | Q(email__icontains=query)
+            | Q(first_name__icontains=query)
+            | Q(last_name__icontains=query)
+        )
+
+        return results.exclude(pk=self.request.user.pk).distinct()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
