@@ -93,6 +93,11 @@
                                         <a href="{% url 'packing-lists-for-trip' trip.pk %}" class="btn btn-sm btn-outline-dark">
                                             <i class="fas fa-suitcase"></i> See Lists
                                         </a>
+                                        {% if trip.has_shopping_list %}
+                                            <a href="{% url 'shopping-list-details' trip.shopping_list.pk %}" class="btn btn-sm btn-outline-dark">
+                                                <i class="fas fa-shopping-cart"></i> Shopping
+                                            </a>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </li>
@@ -206,9 +211,16 @@
                                         </small>
                                     </div>
 
-                                    <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm btn-outline-secondary w-100">
-                                        View
-                                    </a>
+                                    <div class="d-flex gap-2">
+                                        <a href="{% url 'trip-detail' trip.pk %}" class="btn btn-sm btn-outline-secondary flex-fill">
+                                            View
+                                        </a>
+                                        {% if trip.has_shopping_list %}
+                                            <a href="{% url 'shopping-list-details' trip.shopping_list.pk %}" class="btn btn-sm btn-outline-dark flex-fill">
+                                                <i class="fas fa-shopping-cart"></i> Shopping
+                                            </a>
+                                        {% endif %}
+                                    </div>
                                 </li>
                             {% endfor %}
                         </ul>

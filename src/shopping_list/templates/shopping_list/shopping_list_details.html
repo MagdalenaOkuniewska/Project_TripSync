@@ -1,0 +1,137 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Shopping List - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px;">
+    <div class="card shadow">
+        <div class="card-body p-3">
+            <h4 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+                <i class="fas fa-shopping-cart"></i> Shopping List
+            </h4>
+
+            <p class="text-muted mb-3 small">
+                <i class="fas fa-map-marker-alt"></i> {{ shopping_list.trip.title }}
+            </p>
+
+            <hr>
+
+            <h5 class="mb-3">Items ({{ shopping_list.shopping_items.count }})</h5>
+
+            {% if shopping_list.shopping_items.exists %}
+                <div class="list-group mb-3">
+                    {% for item in shopping_list.shopping_items.all %}
+                        <div class="list-group-item py-2">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <div class="flex-grow-1">
+                                    <input type="checkbox"
+                                           class="form-check-input me-2 purchased-checkbox"
+                                           data-item-id="{{ item.pk }}"
+                                           {% if item.is_purchased %}checked{% endif %}
+                                           {% if item.is_purchased %}disabled{% endif %}
+                                           style="cursor: pointer; width: 1.2rem; height: 1.2rem;">
+                                    <strong {% if item.is_purchased %}style="text-decoration: line-through; color: #6c757d;"{% endif %}>
+                                        {{ item.item_name }}
+                                    </strong>
+                                    <span class="text-muted">x{{ item.item_quantity }}</span>
+                                </div>
+                                <div>
+                                    <a href="{% url 'shopping-item-update' item.pk %}" class="btn btn-sm btn-outline-secondary">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{% url 'shopping-item-delete' item.pk %}" class="btn btn-sm btn-outline-danger">
+                                        <i class="fas fa-trash"></i>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div class="ms-4" style="font-size: 0.75rem; color: #6c757d;">
+                                {% if item.added_by %}
+                                    <span><i class="fas fa-user-plus"></i> Added by: {{ item.added_by.username }}</span>
+                                {% endif %}
+                                {% if item.purchased_by %}
+                                    <span class="ms-3" style="color: #198754;"><i class="fas fa-user-check"></i> Purchased by: {{ item.purchased_by.username }}</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p class="text-muted small">No items yet. Click "Add Item" to get started!</p>
+            {% endif %}
+
+            <!-- Buttons -->
+            <div class="d-flex gap-2 flex-wrap">
+                <a href="{% url 'shopping-item-create' shopping_list_pk=shopping_list.pk %}" class="btn btn-sm btn-success">
+                    <i class="fas fa-plus"></i> Add Item
+                </a>
+
+                {% if shopping_list.trip.owner == user %}
+                    <a href="{% url 'shopping-list-delete' shopping_list.pk %}" class="btn btn-sm btn-outline-danger">
+                        <i class="fas fa-trash"></i> Delete List
+                    </a>
+                {% endif %}
+
+                <a href="{% url 'trip-detail' shopping_list.trip.pk %}" class="btn btn-sm btn-outline-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Trip
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener("DOMContentLoaded", function () {
+    const checkboxes = document.querySelectorAll('.purchased-checkbox');
+
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            if (this.disabled) return;
+
+            const itemId = this.dataset.itemId;
+            const isPurchased = this.checked;
+
+            fetch(`/shopping-list/items/${itemId}/toggle/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                body: JSON.stringify({ is_purchased: isPurchased })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.is_purchased) {
+                        this.disabled = true;
+                    }
+                } else {
+                    this.checked = !isPurchased;
+                    alert('Error: ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.checked = !isPurchased;
+                alert('Error updating item');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
