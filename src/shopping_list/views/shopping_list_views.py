@@ -14,7 +14,7 @@ from django.views.generic import (
 from ..models import ShoppingList, ShoppingItem
 from trips.models import Trip
 
-# List nie ponieważ jeden Trip => 1 grupowy shopping list , brak private/shared itd => bedzie przycisk See Shopping List itd
+# ListView nie ponieważ jeden Trip => 1 grupowy shopping list , brak private/shared itd => bedzie przycisk See Shopping List itd
 
 
 def user_can_access_trip(user, trip):

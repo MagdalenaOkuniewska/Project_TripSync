@@ -7,21 +7,28 @@ from ..models import ShoppingItem, ShoppingList
 from .shopping_list_views import user_can_access_trip
 
 
-def user_can_manage_shopping_item(user, shopping_list):
-    """Checks if user can add/edit/delete items in shopping list"""
-    return user_can_access_trip(user, shopping_list.trip)
+class ShoppingItemManageMixin(UserPassesTestMixin):
+    def test_func(self):
+        if "shopping_list_pk" in self.kwargs:
+            shopping_list = get_object_or_404(
+                ShoppingList, pk=self.kwargs["shopping_list_pk"]
+            )
+        else:
+            shopping_list = self.get_object().shopping_list
+
+        return user_can_access_trip(self.request.user, shopping_list.trip)
+
+    def handle_no_permission(self):
+        if not self.request.user.is_authenticated:
+            return super().handle_no_permission()
+        messages.error(self.request, "You cannot add this item.")
+        return redirect("trip-list")
 
 
-class ShoppingItemCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+class ShoppingItemCreateView(LoginRequiredMixin, ShoppingItemManageMixin, CreateView):
     model = ShoppingItem
     template_name = "shopping_list/shopping_item_create.html"
     fields = ["item_name", "item_quantity"]
-
-    def test_func(self):
-        shopping_list = get_object_or_404(
-            ShoppingList, pk=self.kwargs["shopping_list_pk"]
-        )
-        return user_can_manage_shopping_item(self.request.user, shopping_list)
 
     def form_valid(self, form):
         shopping_list = get_object_or_404(
@@ -49,21 +56,11 @@ class ShoppingItemCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView
         context["shopping_list"] = shopping_list
         return context
 
-    def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            return super().handle_no_permission()
-        messages.error(self.request, "You cannot add this item.")
-        return redirect("trip-list")
 
-
-class ShoppingItemUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
+class ShoppingItemUpdateView(LoginRequiredMixin, ShoppingItemManageMixin, UpdateView):
     model = ShoppingItem
     template_name = "shopping_list/shopping_item_create.html"
     fields = ["item_name", "item_quantity"]
-
-    def test_func(self):
-        item = self.get_object()
-        return user_can_manage_shopping_item(self.request.user, item.shopping_list)
 
     def form_valid(self, form):
         messages.success(self.request, f'Item "{form.instance.item_name}" updated!')
@@ -74,20 +71,10 @@ class ShoppingItemUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView
             "shopping-list-details", kwargs={"pk": self.object.shopping_list.pk}
         )
 
-    def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            return super().handle_no_permission()
-        messages.error(self.request, "You cannot update this item.")
-        return redirect("trip-list")
 
-
-class ShoppingItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+class ShoppingItemDeleteView(LoginRequiredMixin, ShoppingItemManageMixin, DeleteView):
     model = ShoppingItem
     template_name = "shopping_list/shopping_item_delete.html"
-
-    def test_func(self):
-        item = self.get_object()
-        return user_can_manage_shopping_item(self.request.user, item.shopping_list)
 
     def form_valid(self, form):
         self.shopping_list_pk = self.get_object().shopping_list.pk
@@ -99,9 +86,3 @@ class ShoppingItemDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView
         return reverse_lazy(
             "shopping-list-details", kwargs={"pk": self.shopping_list_pk}
         )
-
-    def handle_no_permission(self):
-        if not self.request.user.is_authenticated:
-            return super().handle_no_permission()
-        messages.error(self.request, "You cannot delete this item.")
-        return redirect("trip-list")
