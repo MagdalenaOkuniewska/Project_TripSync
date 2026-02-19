@@ -4,6 +4,7 @@ from .views import (
     ProfileView,
     ProfileEditView,
     CustomPasswordResetView,
+    SearchUsersView,
 )
 from django.contrib.auth import views as auth_views
 
@@ -41,4 +42,5 @@ urlpatterns = [
         ),
         name="password_reset_complete",
     ),
+    path("search/", SearchUsersView.as_view(), name="search-users"),
 ]

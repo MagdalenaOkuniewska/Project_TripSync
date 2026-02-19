@@ -18,8 +18,6 @@
                             <li class="nav-item"><a class="nav-link" href="{% url 'trip-create'%}">Create Trip</a></li>
                             <li class="nav-item"><a class="nav-link" href="{%url 'packing-list-template-list' %}">Packing Templates</a></li>
                             <li class="nav-item"><a class="nav-link" href="{%url 'edit_profile' %}">Settings</a></li>
-
-
                             <li class="nav-item">
                                 <form method="post" action="{%url 'logout' %}" style="display: inline;">
                                     {% csrf_token %}
@@ -27,6 +25,16 @@
                                     Logout
                                      </button>
                         </form>
+                    </li>
+
+                        <li class="nav-item d-flex align-items-center">
+                                <form method="GET" action="{% url 'search-users' %}" class="d-flex">
+                                <input type="text" name="q" placeholder="Search users" class="form-control form-control-sm me-2"
+                                       style="width: 160px; border: 2px solid rgba(255,212,64,0.98); border-radius: 5px;">
+                            <button type="submit" class="btn btn-sm" style="background-color: rgba(255,212,64,0.98); color: #100808; font-weight: bold; border-radius: 5px; text-transform: uppercase; white-space: nowrap;">
+                                <i class="fas fa-search"></i> Search
+                                </button>
+                            </form>
                     </li>
                 {% else %}
                     <li class="nav-item"><a class="nav-link" href="{%url 'login' %}">Login</a></li>

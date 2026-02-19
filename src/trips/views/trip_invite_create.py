@@ -32,6 +32,19 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return redirect("trip-list")
 
     def form_valid(self, form):
+        user = form.instance.user
+        if self.trip.is_participant(user):
+            messages.error(
+                self.request, f'"{user.username}" is already a member of this trip!'
+            )
+            return redirect("trip-detail", pk=self.trip.pk)
+
+        if TripInvite.objects.filter(trip=self.trip, user=user).exists():
+            messages.error(
+                self.request, f'You already invited "{user.username}" to this trip!'
+            )
+            return redirect("trip-detail", pk=self.trip.pk)
+
         form.instance.trip = self.trip
         form.instance.invited_by = self.request.user
         messages.success(

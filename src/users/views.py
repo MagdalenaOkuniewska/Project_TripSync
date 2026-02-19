@@ -133,3 +133,30 @@ class CustomPasswordResetView(PasswordResetView):
             f'Password reset email was sent to "{email}". Please check your inbox and follow instructions.',
         )
         return super().form_valid(form)
+
+
+class SearchUsersView(LoginRequiredMixin, ListView):
+    model = CustomUser
+    template_name = "users/search_users.html"
+    context_object_name = "users"
+
+    def get_queryset(self):
+        query = self.request.GET.get("q")  # w navbar name="q"
+
+        if not query:
+            return CustomUser.objects.none()
+
+        results = CustomUser.objects.filter(
+            Q(username__icontains=query)
+            | Q(email__icontains=query)
+            | Q(first_name__icontains=query)
+            | Q(last_name__icontains=query)
+        )
+
+        return results.exclude(pk=self.request.user.pk).distinct()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["query"] = self.request.GET.get("q")
+        context["my_trips"] = Trip.objects.filter(owner=self.request.user)
+        return context

@@ -1,0 +1,73 @@
+{% extends 'dashboard/base.html' %}
+
+{% block title %}Search Users - TripSync{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px;">
+
+    {% if query %}
+        <h5 class="mb-3" style="font-family: 'Montserrat', sans-serif; font-weight: 700;">
+            <i class="fas fa-users"></i> Search Results: {{ users|length }}
+        </h5>
+
+        {% if users %}
+            <div class="list-group">
+
+                {% for found_user in users %}
+                    <div class="list-group-item py-3">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong style="font-size: 1.1rem;">{{ found_user.username }}</strong>
+                                <small class="text-muted d-block">
+                                    <i class="fas fa-sign-in-alt"></i>
+
+                                    {% if found_user.last_login %}
+                                        Last login: {{ found_user.last_login|timesince }} ago
+                                    {% else %}
+                                        Last login: Never
+                                    {% endif %}
+                                </small>
+                            </div>
+
+                            {% if my_trips %}
+                                <div class="dropdown">
+                                    <button class="btn btn-sm dropdown-toggle"
+                                            type="button"
+                                            data-bs-toggle="dropdown"
+                                            style="background-color: rgba(255,212,64,0.98); color: #100808; font-weight: bold; border-radius: 5px;">
+                                        <i class="fas fa-user-plus"></i> Invite to Trip
+                                    </button>
+                                    <ul class="dropdown-menu">
+
+                                        {% for trip in my_trips %}
+                                            <li>
+                                                <form method="POST" action="{% url 'trip-invite-create' trip.pk %}">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="user" value="{{ found_user.pk }}">
+                                                    <button type="submit" class="dropdown-item">
+                                                        <i class="fas fa-map-marker-alt"></i> {{ trip.title }}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-search" style="font-size: 3rem; color: #ccc;"></i>
+                <p class="text-muted mt-3">No users found for "<strong>{{ query }}</strong>"</p>
+            </div>
+        {% endif %}
+    {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-search" style="font-size: 3rem; color: #ccc;"></i>
+            <p class="text-muted mt-3">Type a username to search</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
