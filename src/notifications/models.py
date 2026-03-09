@@ -17,10 +17,10 @@ class Notification(models.Model):
         ("trip_reminder", "Trip Reminder"),
     ]
 
-    sender = models.ForeignKey(
+    recipient = models.ForeignKey(
         User, on_delete=models.CASCADE, related_name="notifications"
     )
-    recipient = models.ForeignKey(
+    sender = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
         null=True,
