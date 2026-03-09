@@ -35,7 +35,7 @@ class Notification(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name="notifications",
+        related_name="trip_notifications",
     )
 
     message = models.TextField(blank=True, default="")
