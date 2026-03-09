@@ -18,7 +18,12 @@ class NotificationListView(LoginRequiredMixin, ListView):
     context_object_name = "notifications"
 
     def get_queryset(self):
-        return Notification.objects.filter(recipient=self.request.user)
+        queryset = Notification.objects.filter(recipient=self.request.user)
+
+        if self.request.GET.get("unread"):
+            queryset = queryset.filter(is_read=False)
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
