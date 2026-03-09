@@ -120,6 +120,20 @@ class TripInvite(models.Model):
             trip=self.trip, user=self.user, defaults={"role": "member"}
         )
 
+        from notifications.models import (
+            Notification,
+        )  # tutaj, bo jak na górze to zapętli sie import między trips a notifications (model Trip import w notif.)
+
+        # wewnątrz metody import wykonuje się dopiero gdy metoda jest wywołana
+
+        Notification.objects.create(
+            recipient=self.trip.owner,
+            sender=self.user,
+            notification_type="invite_accepted",
+            trip=self.trip,
+            message=f"{self.user.username} accepted your invitation to {self.trip.title}.",
+        )
+
     def decline(self):
         if self.status != "pending":
             raise ValidationError("Trip must be in pending state to decline.")
@@ -128,7 +142,17 @@ class TripInvite(models.Model):
         self.responded_at = timezone.now()
         self.save()
 
-    def mark_expired(self) -> bool:  # TODO
+        from notifications.models import Notification
+
+        Notification.objects.create(
+            recipient=self.trip.owner,
+            sender=self.user,
+            notification_type="invite_declined",
+            trip=self.trip,
+            message=f"{self.user.username} declined your invitation to {self.trip.title}.",
+        )
+
+    def mark_expired(self) -> bool:
         if self.is_expired():
             self.status = "expired"
             self.save(update_fields=["status"])
