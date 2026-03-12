@@ -5,12 +5,6 @@ from django.views import View
 from django.views.generic import ListView
 from .models import Notification
 
-# lista wszystkich powiadomień
-# lista unread
-# oznacz jako przeczytane
-# oznacz wszystkie jako przeczytane
-# usuń powiadomienie
-
 
 class NotificationListView(LoginRequiredMixin, ListView):
     model = Notification
@@ -27,7 +21,7 @@ class NotificationListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["unread_count"] = Notification.objects.filter(
+        context["unread_notifications_count"] = Notification.objects.filter(
             recipient=self.request.user, is_read=False
         ).count()
         return context
@@ -55,3 +49,12 @@ class NotificationDeleteView(LoginRequiredMixin, View):
         notification.delete()
         messages.success(request, "Notification deleted.")
         return redirect("notification-list")
+
+
+# funkcja zeby pokazywac powiadomienia w KAŻDYM widoku bez dodawania context cos tam w doslownie KAŻDYM widoku?
+# def count_unread_notifications(request):
+#     if request.user.is_authenticated:
+#         notifications = Notification.objects.filter(recipient=request.user, read=False).count()
+#     else:
+#         notifications = 0
+#     return {'unread_notifications_count': notifications}

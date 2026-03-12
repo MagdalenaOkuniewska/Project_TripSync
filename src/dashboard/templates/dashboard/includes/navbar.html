@@ -1,46 +1,53 @@
 <nav class="navbar navbar-expand-lg navbar-light" id="mainNav" style="background-color: rgba(63,106,71,0.74);">
-            <div class="container">
-                <a class="navbar-brand" href="{% url 'home' %}">
-                    <em style="font-size: 1.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif;">
-        T<span style="text-transform: lowercase;">rip</span>S<span style="text-transform: lowercase;">ync</span>
-    </em></a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
-                    Menu
-                    <i class="fas fa-bars ms-1"></i>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarResponsive">
-                    <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}">
+            <em style="font-size: 1.75rem; font-weight: 700; font-family: 'Montserrat', sans-serif;">
+                T<span style="text-transform: lowercase;">rip</span>S<span style="text-transform: lowercase;">ync</span>
+            </em>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars ms-1"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav text-uppercase ms-auto py-4 py-lg-0" style="font-size: 0.7rem;">
+                {% if user.is_authenticated %}
 
-
-                        {% if user.is_authenticated %}
-                            <li class="nav-item"><a class="nav-link" href="{%url 'profile' %}">Profile</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'trip-list'%}">My Trips</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{% url 'trip-create'%}">Create Trip</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{%url 'packing-list-template-list' %}">Packing Templates</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{%url 'edit_profile' %}">Settings</a></li>
-                            <li class="nav-item">
-                                <form method="post" action="{%url 'logout' %}" style="display: inline;">
-                                    {% csrf_token %}
-                                    <button type="submit" class="nav-link btn btn-link text-uppercase" style="color: #ffc800;">
-                                    Logout
-                                     </button>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'profile' %}">Profile</a></li>
+                <li class="nav-item">
+                        <a class="nav-link" href="{% url 'notification-list' %}">
+                            <i class="fas fa-bell" style="font-size: 1.3rem; color: rgba(255,212,64,0.98);"></i>
+                            {% if unread_notifications_count %}
+                                <span class="badge bg-danger">{{ unread_notifications_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'trip-list' %}">My Trips</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'trip-create' %}">Create Trip</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'packing-list-template-list' %}">Packing Templates</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'edit_profile' %}">Settings</a></li>
+                    <li class="nav-item">
+                        <form method="post" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="nav-link btn btn-link text-uppercase" style="color: #ffc800;">
+                                Logout
+                            </button>
                         </form>
                     </li>
-
-                        <li class="nav-item d-flex align-items-center">
-                                <form method="GET" action="{% url 'search-users' %}" class="d-flex">
-                                <input type="text" name="q" placeholder="Search users" class="form-control form-control-sm me-2"
-                                       style="width: 160px; border: 2px solid rgba(255,212,64,0.98); border-radius: 5px;">
+                    <li class="nav-item d-flex align-items-center">
+                        <form method="GET" action="{% url 'search-users' %}" class="d-flex">
+                            <input type="text" name="q" placeholder="Search users" class="form-control form-control-sm me-2"
+                                   style="width: 160px; border: 2px solid rgba(255,212,64,0.98); border-radius: 5px;">
                             <button type="submit" class="btn btn-sm" style="background-color: rgba(255,212,64,0.98); color: #100808; font-weight: bold; border-radius: 5px; text-transform: uppercase; white-space: nowrap;">
                                 <i class="fas fa-search"></i> Search
-                                </button>
-                            </form>
+                            </button>
+                        </form>
                     </li>
                 {% else %}
-                    <li class="nav-item"><a class="nav-link" href="{%url 'login' %}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{%url 'register' %}">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Register</a></li>
                 {% endif %}
-                    </ul>
-                </div>
-            </div>
-        </nav>
+            </ul>
+        </div>
+    </div>
+</nav>
