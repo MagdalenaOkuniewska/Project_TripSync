@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ..models import Trip, TripInvite
+from notifications.models import Notification
 
 
 class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -52,8 +53,6 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             form
         )  # zapisuje zaproszenie, self.object dostępne
 
-        from notifications.models import Notification
-
         Notification.objects.create(
             recipient=self.object.user,
             sender=self.request.user,
@@ -61,6 +60,8 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             trip=self.trip,
             message=f"{self.request.user.username} invited you to join {self.trip.title}.",
         )
+
+        # log_action(action='member_added', content_object=self.object, performed_by=self.request.user, afffected_user=self.object.user)
 
         messages.success(
             self.request, f"Invitation sent to {form.instance.user.username}."

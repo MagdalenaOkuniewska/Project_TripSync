@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from notifications.models import Notification
 
 User = get_user_model()
 
@@ -120,12 +121,6 @@ class TripInvite(models.Model):
             trip=self.trip, user=self.user, defaults={"role": "member"}
         )
 
-        from notifications.models import (
-            Notification,
-        )  # tutaj, bo jak na górze to zapętli sie import między trips a notifications (model Trip import w notif.)
-
-        # wewnątrz metody import wykonuje się dopiero gdy metoda jest wywołana
-
         Notification.objects.create(
             recipient=self.trip.owner,
             sender=self.user,
@@ -141,8 +136,6 @@ class TripInvite(models.Model):
         self.status = "declined"
         self.responded_at = timezone.now()
         self.save()
-
-        from notifications.models import Notification
 
         Notification.objects.create(
             recipient=self.trip.owner,
