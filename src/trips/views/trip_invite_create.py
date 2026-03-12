@@ -4,6 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ..models import Trip, TripInvite
+from notifications.models import Notification
 
 
 class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -47,10 +48,25 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
 
         form.instance.trip = self.trip
         form.instance.invited_by = self.request.user
+
+        response = super().form_valid(
+            form
+        )  # zapisuje zaproszenie, self.object dostępne
+
+        Notification.objects.create(
+            recipient=self.object.user,
+            sender=self.request.user,
+            notification_type="trip_invite",
+            trip=self.trip,
+            message=f"{self.request.user.username} invited you to join {self.trip.title}.",
+        )
+
+        # log_action(action='member_added', content_object=self.object, performed_by=self.request.user, afffected_user=self.object.user)
+
         messages.success(
             self.request, f"Invitation sent to {form.instance.user.username}."
         )
-        return super().form_valid(form)
+        return response
 
     def get_success_url(self):
         return reverse_lazy("trip-detail", kwargs={"pk": self.trip.id})

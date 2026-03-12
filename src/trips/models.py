@@ -2,6 +2,7 @@ from django.utils import timezone
 from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from notifications.models import Notification
 
 User = get_user_model()
 
@@ -120,6 +121,14 @@ class TripInvite(models.Model):
             trip=self.trip, user=self.user, defaults={"role": "member"}
         )
 
+        Notification.objects.create(
+            recipient=self.trip.owner,
+            sender=self.user,
+            notification_type="invite_accepted",
+            trip=self.trip,
+            message=f"{self.user.username} accepted your invitation to {self.trip.title}.",
+        )
+
     def decline(self):
         if self.status != "pending":
             raise ValidationError("Trip must be in pending state to decline.")
@@ -128,7 +137,15 @@ class TripInvite(models.Model):
         self.responded_at = timezone.now()
         self.save()
 
-    def mark_expired(self) -> bool:  # TODO
+        Notification.objects.create(
+            recipient=self.trip.owner,
+            sender=self.user,
+            notification_type="invite_declined",
+            trip=self.trip,
+            message=f"{self.user.username} declined your invitation to {self.trip.title}.",
+        )
+
+    def mark_expired(self) -> bool:
         if self.is_expired():
             self.status = "expired"
             self.save(update_fields=["status"])
