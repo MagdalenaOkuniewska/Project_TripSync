@@ -49,12 +49,3 @@ class NotificationDeleteView(LoginRequiredMixin, View):
         notification.delete()
         messages.success(request, "Notification deleted.")
         return redirect("notification-list")
-
-
-# funkcja zeby pokazywac powiadomienia w KAŻDYM widoku bez dodawania context cos tam w doslownie KAŻDYM widoku?
-# def count_unread_notifications(request):
-#     if request.user.is_authenticated:
-#         notifications = Notification.objects.filter(recipient=request.user, read=False).count()
-#     else:
-#         notifications = 0
-#     return {'unread_notifications_count': notifications}

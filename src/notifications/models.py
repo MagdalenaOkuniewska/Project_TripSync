@@ -1,7 +1,6 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
-from trips.models import Trip
 
 User = get_user_model()
 
@@ -31,7 +30,7 @@ class Notification(models.Model):
         max_length=50, choices=NOTIFICATION_TYPE_CHOICES
     )
     trip = models.ForeignKey(
-        Trip,
+        "trips.Trip",
         on_delete=models.CASCADE,
         null=True,
         blank=True,
