@@ -45,6 +45,7 @@ INSTALLED_EXTENSIONS = [
     "packing_lists.apps.PackingListConfig",
     "shopping_list.apps.ShoppingListConfig",
     "notifications.apps.NotificationsConfig",
+    "logs.apps.LogsConfig",
     "crispy_forms",
     "crispy_bootstrap4",
     "silk",
