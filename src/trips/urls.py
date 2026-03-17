@@ -11,6 +11,8 @@ from .views import (
     TripInviteCancelView,
     TripInviteSentListView,
     TripInviteRespondView,
+    TripMemberLeaveView,
+    TripMemberRemoveView,
 )
 
 urlpatterns = [
@@ -28,6 +30,14 @@ urlpatterns = [
         "<int:trip_id>/members/", TripMemberListView.as_view(), name="trip-member-list"
     ),
     path("invites/", TripInviteListView.as_view(), name="trip-invite-list"),
+    path(
+        "<int:trip_id>/leave/", TripMemberLeaveView.as_view(), name="trip-member-leave"
+    ),
+    path(
+        "members/<int:member_id>/remove/",
+        TripMemberRemoveView.as_view(),
+        name="trip-member-remove",
+    ),
     path("invites/sent/", TripInviteSentListView.as_view(), name="trip-invite-sent"),
     path(
         "invites/<int:pk>/cancel/",

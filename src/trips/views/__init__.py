@@ -9,6 +9,8 @@ from .trip_invite_respond import TripInviteRespondView
 from .trip_invite_sent_list import TripInviteSentListView
 from .trip_invite_cancel import TripInviteCancelView
 from .trip_member_list import TripMemberListView
+from .trip_member_leave import TripMemberLeaveView
+from .trip_member_remove import TripMemberRemoveView
 
 __all__ = [
     "TripListView",
@@ -22,4 +24,6 @@ __all__ = [
     "TripInviteCancelView",
     "TripInviteSentListView",
     "TripMemberListView",
+    "TripMemberLeaveView",
+    "TripMemberRemoveView",
 ]
