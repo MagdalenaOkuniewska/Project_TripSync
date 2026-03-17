@@ -3,6 +3,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from notifications.models import Notification
+from logs.utils import log_action
 
 User = get_user_model()
 
@@ -72,6 +73,47 @@ class TripMember(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.trip.title}"
 
+    def leave(self):
+        if self.role == "owner":
+            raise ValidationError("Owner cannot leave the trip.")
+
+        Notification.objects.create(
+            recipient=self.trip.owner,
+            sender=self.user,
+            notification_type="member_left",
+            trip=self.trip,
+            message=f'{self.user.username} left your trip "{self.trip.title}".',
+        )
+
+        log_action(
+            action="member_left",
+            content_object=self.trip,
+            performed_by=self.user,
+            affected_user=self.user,
+        )
+        self.delete()
+
+    def remove(self, performed_by):
+        if self.role == "owner":
+            raise ValidationError("Cannot remove the owner from the trip.")
+
+        Notification.objects.create(
+            recipient=self.user,
+            sender=performed_by,
+            notification_type="member_removed",
+            trip=self.trip,
+            message=f'You have been removed from "{self.trip.title}" by {performed_by.username}.',
+        )
+
+        log_action(
+            action="member_removed",
+            content_object=self.trip,
+            performed_by=performed_by,
+            affected_user=self.user,
+        )
+
+        self.delete()
+
 
 class TripInvite(models.Model):
     STATUS_CHOICES = [
@@ -127,6 +169,13 @@ class TripInvite(models.Model):
             notification_type="invite_accepted",
             trip=self.trip,
             message=f"{self.user.username} accepted your invitation to {self.trip.title}.",
+        )
+
+        log_action(
+            action="member_added",
+            content_object=self.trip,
+            performed_by=self.user,
+            affected_user=self.user,
         )
 
     def decline(self):
