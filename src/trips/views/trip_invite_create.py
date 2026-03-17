@@ -5,6 +5,7 @@ from django.views.generic import CreateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from ..models import Trip, TripInvite
 from notifications.models import Notification
+from logs.utils import log_action
 
 
 class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
@@ -40,7 +41,14 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             )
             return redirect("trip-detail", pk=self.trip.pk)
 
-        if TripInvite.objects.filter(trip=self.trip, user=user).exists():
+        TripInvite.objects.filter(
+            trip=self.trip,
+            user=user,
+        ).exclude(status="pending").delete()
+
+        if TripInvite.objects.filter(
+            trip=self.trip, user=user, status="pending"
+        ).exists():
             messages.error(
                 self.request, f'You already invited "{user.username}" to this trip!'
             )
@@ -61,7 +69,12 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
             message=f"{self.request.user.username} invited you to join {self.trip.title}.",
         )
 
-        # log_action(action='member_added', content_object=self.object, performed_by=self.request.user, afffected_user=self.object.user)
+        log_action(
+            action="invite_sent",
+            content_object=self.trip,
+            performed_by=self.request.user,
+            affected_user=self.object.user,
+        )
 
         messages.success(
             self.request, f"Invitation sent to {form.instance.user.username}."

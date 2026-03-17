@@ -194,6 +194,13 @@ class TripInvite(models.Model):
             message=f"{self.user.username} declined your invitation to {self.trip.title}.",
         )
 
+        log_action(
+            action="invite_declined",
+            content_object=self.trip,
+            performed_by=self.user,
+            affected_user=self.user,
+        )
+
     def mark_expired(self) -> bool:
         if self.is_expired():
             self.status = "expired"

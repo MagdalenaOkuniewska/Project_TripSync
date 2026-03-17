@@ -12,7 +12,12 @@ class AuditLog(models.Model):
         ("member_added", "Member added"),
         ("member_removed", "Member removed"),
         ("member_left", "Member left"),
+        ("invite_sent", "Invite sent"),
+        ("invite_declined", "Invite declined"),
     ]
+
+    class Meta:
+        ordering = ["-timestamp"]
 
     # Generic relation - może wskazywać na DOWOLNY model np. (wyjazd, event, ...)
     # Django ma wbudowaną appkę django.contrib.contenttypes która śledzi wszystkie modele w projekcie.

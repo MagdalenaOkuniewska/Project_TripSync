@@ -14,40 +14,50 @@
         <div class="list-group">
             {% for log in logs %}
                 <div class="list-group-item py-3">
-                    <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex gap-3 align-items-start">
 
-                        <div class="d-flex gap-3 align-items-start">
-                            <!-- ikona zależna od typu akcji -->
-                            <div class="mt-1">
-                                {% if log.action == 'member_added' %}
-                                    <i class="fas fa-user-plus text-success" style="font-size: 1.2rem;"></i>
-                                {% elif log.action == 'member_left' %}
-                                    <i class="fas fa-user-minus text-warning" style="font-size: 1.2rem;"></i>
-                                {% elif log.action == 'member_removed' %}
-                                    <i class="fas fa-user-xmark text-danger" style="font-size: 1.2rem;"></i>
-                                {% endif %}
-                            </div>
+                        <!-- ikona -->
+                        <div class="mt-1">
+                            {% if log.action == 'member_added' %}
+                                <i class="fas fa-user-plus text-success" style="font-size: 1.2rem;"></i>
+                            {% elif log.action == 'member_left' %}
+                                <i class="fas fa-user-minus text-warning" style="font-size: 1.2rem;"></i>
+                            {% elif log.action == 'member_removed' %}
+                                <i class="fas fa-user-xmark text-danger" style="font-size: 1.2rem;"></i>
+                            {% elif log.action == 'invite_sent' %}
+                                <i class="fas fa-envelope text-primary" style="font-size: 1.2rem;"></i>
+                            {% elif log.action == 'invite_declined' %}
+                                <i class="fas fa-envelope-circle-xmark text-danger" style="font-size: 1.2rem;"></i>
+                            {% endif %}
+                        </div>
 
-                            <div>
-                                <!-- opis akcji -->
-                                {% if log.action == 'member_added' %}
-                                    <p class="mb-1">
-                                        <strong>{{ log.affected_user.username }}</strong> joined the trip.
-                                    </p>
-                                {% elif log.action == 'member_left' %}
-                                    <p class="mb-1">
-                                        <strong>{{ log.affected_user.username }}</strong> left the trip.
-                                    </p>
-                                {% elif log.action == 'member_removed' %}
-                                    <p class="mb-1">
-                                        <strong>{{ log.affected_user.username }}</strong> was removed by <strong>{{ log.performed_by.username }}</strong>.
-                                    </p>
-                                {% endif %}
+                        <!-- opis -->
+                        <div>
+                            {% if log.action == 'member_added' %}
+                                <p class="mb-1">
+                                    <strong>{{ log.affected_user.username }}</strong> joined the trip.
+                                </p>
+                            {% elif log.action == 'member_left' %}
+                                <p class="mb-1">
+                                    <strong>{{ log.affected_user.username }}</strong> left the trip.
+                                </p>
+                            {% elif log.action == 'member_removed' %}
+                                <p class="mb-1">
+                                    <strong>{{ log.affected_user.username }}</strong> was removed by <strong>{{ log.performed_by.username }}</strong>.
+                                </p>
+                            {% elif log.action == 'invite_sent' %}
+                                <p class="mb-1">
+                                    <strong>{{ log.performed_by.username }}</strong> invited <strong>{{ log.affected_user.username }}</strong>.
+                                </p>
+                            {% elif log.action == 'invite_declined' %}
+                                <p class="mb-1">
+                                    <strong>{{ log.affected_user.username }}</strong> declined the invitation.
+                                </p>
+                            {% endif %}
 
-                                <small class="text-muted">
-                                    {{ log.timestamp|date:"M d, Y" }} at {{ log.timestamp|date:"H:i" }}
-                                </small>
-                            </div>
+                            <small class="text-muted">
+                                {{ log.timestamp|date:"M d, Y" }} at {{ log.timestamp|date:"H:i" }}
+                            </small>
                         </div>
 
                     </div>
