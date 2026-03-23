@@ -19,13 +19,9 @@ class AuditLog(models.Model):
     class Meta:
         ordering = ["-timestamp"]
 
-    # Generic relation - może wskazywać na DOWOLNY model np. (wyjazd, event, ...)
-    # Django ma wbudowaną appkę django.contrib.contenttypes która śledzi wszystkie modele w projekcie.
-    # Każdy model ma swój wpis w tabeli ContentType
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey("content_type", "object_id")
-    # Python który łączy content_type + object_id i zwraca gotowy obiekt
 
     action = models.CharField(max_length=50, choices=ACTIONS_CHOICES)
     performed_by = models.ForeignKey(

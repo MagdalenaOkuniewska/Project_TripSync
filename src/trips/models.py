@@ -206,7 +206,7 @@ class TripInvite(models.Model):
             self.status = "expired"
             self.save(update_fields=["status"])
             return True  # marked as expired
-        return False  # invie is not expired - done nothing
+        return False  # invite is not expired - done nothing
 
     def cancel(self) -> None:
         if self.status != "pending":
