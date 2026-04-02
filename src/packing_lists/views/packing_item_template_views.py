@@ -98,12 +98,8 @@ class PackingItemTemplateDeleteView(
         template_item = self.get_object()
         return user_owns_template_item(self.request.user, template_item)
 
-    def delete(self, request, *args, **kwargs):
-        # Save template pk before deleting the object (for success_url)
-        self.template_pk = self.get_object().template.pk
-        return super().delete(request, *args, **kwargs)
-
     def form_valid(self, form):
+        self.template_pk = self.get_object().template.pk
         messages.success(self.request, f'Template-item "{self.object.name}" deleted!')
         return super().form_valid(form)
 
