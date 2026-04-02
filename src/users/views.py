@@ -11,6 +11,17 @@ from packing_lists.models import PackingList
 from notes.models import Note
 from django.db.models import Q
 
+from django.contrib.auth.tokens import default_token_generator  # generowanie tokenu
+from django.utils.http import urlsafe_base64_encode
+
+# W Django zawsze force_bytes => działa dla liczb jak i dla stringów (Unicode)
+# Koduje bajty w Base64, ale w wersji bezpiecznej dla URL, aby w linku pojawiały się dziwne znaki typu / lub +
+from django.utils.encoding import (
+    force_bytes,
+)  # force_bytes() zamienia cokolwiek (tu: liczbę) na bytes. 42 → b'42'
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+
 
 class RegistrationView(CreateView):
     model = CustomUser
@@ -19,10 +30,26 @@ class RegistrationView(CreateView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        form.save()
-        username = form.cleaned_data.get("username")
-        messages.success(self.request, f"Account created for {username}")
-        return super().form_valid(form)
+        user = form.save(commit=False)
+        user.is_active = False  # konto nieaktywne
+        user.save()
+
+        token = default_token_generator.make_token(user)  # generowanie tokenu
+        uid = urlsafe_base64_encode(force_bytes(user.pk))  # kodowanie ID usera do meila
+
+        # PasswordResetView obsługuje to gotowymi mechanizmami - w linku password-reset/<uidb64>/<token>/
+
+        current_site = get_current_site(self.request)
+        activation_link = f"http://{current_site.domain}/users/activate/{uid}/{token}/"
+        email_subject = "Confirm Registration"
+
+        # send_mail(email_subject, "", settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False) ->oczywiście do zmiany
+
+        # na main branchu jest:
+        # form.save()
+        # username = form.cleaned_data.get("username")
+        # messages.success(self.request, f"Account created for {username}")
+        # return super().form_valid(form)
 
 
 class ProfileView(LoginRequiredMixin, ListView):
