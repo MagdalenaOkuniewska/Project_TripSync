@@ -5,11 +5,13 @@ from .views import (
     ProfileEditView,
     CustomPasswordResetView,
     SearchUsersView,
+    ActivateView,
 )
 from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     path("register/", RegistrationView.as_view(), name="register"),
+    path("activate/<uidb64>/<token>/", ActivateView.as_view(), name="activate"),
     path("profile/", ProfileView.as_view(), name="profile"),
     path("profile/edit/", ProfileEditView.as_view(), name="edit_profile"),
     path(

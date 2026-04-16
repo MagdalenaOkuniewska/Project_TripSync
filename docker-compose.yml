@@ -1,0 +1,28 @@
+services:
+  web:
+    container_name: trip-web
+    build: .
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+
+  db:
+    container_name: trip-db
+    image: postgres:17.5
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: TajneHaslo456#@!
+      POSTGRES_USER: tripsync_user
+      POSTGRES_DB: tripsync_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+    postgres_data:
+
+

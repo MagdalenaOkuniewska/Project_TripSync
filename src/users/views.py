@@ -1,7 +1,8 @@
+from django.shortcuts import redirect
 from django.utils import timezone
 from django.contrib import messages
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, UpdateView, ListView
+from django.views.generic import CreateView, UpdateView, ListView, View
 from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
@@ -11,6 +12,15 @@ from packing_lists.models import PackingList
 from notes.models import Note
 from django.db.models import Q
 
+from django.contrib.auth.tokens import default_token_generator  # generowanie tokenu
+from django.utils.encoding import (
+    force_bytes,
+    force_str,
+)  # force_bytes() zamienia cokolwiek (tu: liczbę) na bytes. 42 → b'42'
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import send_mail
+
 
 class RegistrationView(CreateView):
     model = CustomUser
@@ -19,10 +29,49 @@ class RegistrationView(CreateView):
     success_url = reverse_lazy("login")
 
     def form_valid(self, form):
-        form.save()
-        username = form.cleaned_data.get("username")
-        messages.success(self.request, f"Account created for {username}")
-        return super().form_valid(form)
+        user = form.save(commit=False)
+        user.is_active = False  # konto nieaktywne
+        user.save()
+
+        token = default_token_generator.make_token(user)  # generowanie tokenu
+        uid = urlsafe_base64_encode(force_bytes(user.pk))  # kodowanie ID usera do meila
+
+        current_site = get_current_site(self.request)
+        activation_link = f"http://{current_site.domain}/users/activate/{uid}/{token}/"
+        email_subject = "Confirm Registration"
+
+        send_mail(
+            email_subject,
+            message=f"Click the link to activate your account {activation_link}",
+            from_email="noreply@tripsync.com",
+            recipient_list=[user.email],
+        )
+
+        messages.info(self.request, "Check your email to activate your account.")
+
+        return redirect(self.success_url)
+
+
+class ActivateView(View):
+    def get(self, request, uidb64, token):
+        try:
+            uid = force_str(
+                urlsafe_base64_decode(uidb64)
+            )  # dekoduje uid z Base64 z powrotem na id usera
+            user = CustomUser.objects.get(pk=uid)  # pobiera usera
+        except (TypeError, ValueError, OverflowError, CustomUser.DoesNotExist):
+            user = None
+
+        if user is not None and default_token_generator.check_token(
+            user, token
+        ):  # czy token jest ważny
+            user.is_active = True
+            user.save()
+            messages.success(request, "Your account has been activated.")
+            return redirect("login")
+        else:
+            messages.error(request, "The confirmation link is invalid or has expired.")
+            return redirect("register")
 
 
 class ProfileView(LoginRequiredMixin, ListView):
