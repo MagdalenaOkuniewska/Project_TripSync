@@ -49,14 +49,7 @@ class RegistrationView(CreateView):
 
         messages.info(self.request, "Check your email to activate your account.")
 
-        # return super().form_valid(form) ->aktualizuje pola usera, unieważnia token bo jest powiązany ze stanem usera
         return redirect(self.success_url)
-
-        # na main branchu jest:
-        # form.save()
-        # username = form.cleaned_data.get("username")
-        # messages.success(self.request, f"Account created for {username}")
-        # return super().form_valid(form)
 
 
 class ActivateView(View):

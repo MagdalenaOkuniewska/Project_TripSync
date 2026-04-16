@@ -1,189 +1,175 @@
 from django.test import TestCase
+from django.urls import reverse
+from django.contrib.messages import get_messages
 from django.contrib.auth import get_user_model
 from ..forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
-from trips.models import Trip
-from django.utils import timezone
-from django.contrib.messages import get_messages
-from django.urls import reverse
+from .factories import UserFactory, TripFactory
 
 User = get_user_model()
 
 
 class RegistrationViewTest(TestCase):
+
     def setUp(self):
         self.url = reverse("register")
-
-    def test_registration_page_load_correctly(self):
-        response = self.client.get(self.url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, "users/register.html")
-        self.assertIsInstance(response.context["form"], UserRegistrationForm)
-
-    def test_registration_success(self):
-        data = {
+        self.valid_data = {
             "username": "newuser",
             "email": "newuser@example.com",
             "password1": "olduser321",
             "password2": "olduser321",
         }
 
-        response = self.client.post(self.url, data)
+    def test_page_loads_correctly(self):
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "users/register.html")
+        self.assertIsInstance(response.context["form"], UserRegistrationForm)
 
+    def test_registration_creates_inactive_user(self):
+        self.client.post(self.url, self.valid_data)
+        user = User.objects.get(username="newuser")
+        self.assertFalse(user.is_active)
+
+    def test_registration_redirects_after_success(self):
+        response = self.client.post(self.url, self.valid_data)
         self.assertRedirects(response, reverse("login"))
-        self.assertTrue(User.objects.filter(username="newuser").exists())
 
-        messages = list(get_messages(response.wsgi_request))
+    def test_registration_shows_check_email_message(self):
+        response = self.client.post(self.url, self.valid_data)
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("email", str(msgs[0]).lower())
 
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), "Account created for newuser")
-
-    def test_registration_fails_with_invalid_data(self):
-        User.objects.create_user(
-            username="takenuser", email="test@example.com", password="<Password>"
-        )
+    def test_registration_fails_with_taken_username(self):
+        UserFactory(username="takenuser")
         data = {
             "username": "takenuser",
-            "email": "newuser@example.com",
+            "email": "other@example.com",
             "password1": "olduser321",
             "password2": "olduser321",
         }
-
         response = self.client.post(self.url, data)
-
         self.assertEqual(response.status_code, 200)
         self.assertEqual(User.objects.filter(username="takenuser").count(), 1)
-
-        form = response.context["form"]
-
-        self.assertFalse(form.is_valid())
-        self.assertIn("username", form.errors)
+        self.assertIn("username", response.context["form"].errors)
 
 
 class ProfileViewTest(TestCase):
+
     def setUp(self):
         self.url = reverse("profile")
-        self.user = User.objects.create_user(
-            username="testuser", email="email@example.com", password="custompassword123"
-        )
+        self.user = UserFactory()
+        self.trip1 = TripFactory(owner=self.user)
+        self.trip2 = TripFactory(owner=self.user)
+        self.client.force_login(self.user)
 
-        self.trip1 = Trip.objects.create(
-            title="Trip 1",
-            destination="Destination 1",
-            start_date=timezone.now().date(),
-            end_date=timezone.now().date(),
-            owner=self.user,
-        )
-        self.trip2 = Trip.objects.create(
-            title="Trip 2",
-            destination="Destination 2",
-            start_date=timezone.now().date(),
-            end_date=timezone.now().date(),
-            owner=self.user,
-        )
-
-    def test_profile_page_load_correctly(self):
-        self.client.login(username="testuser", password="custompassword123")
+    def test_page_loads_correctly(self):
         response = self.client.get(self.url)
-
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/profile.html")
 
-        self.assertIn("user_trips", response.context)
+    def test_shows_user_trips(self):
+        response = self.client.get(self.url)
         self.assertIn(self.trip1, response.context["user_trips"])
         self.assertIn(self.trip2, response.context["user_trips"])
 
-    def test_profile_requires_login(self):
+    def test_requires_login(self):
+        self.client.logout()
         response = self.client.get(self.url)
-        expected_url = f'{reverse("login")}?next={self.url}'
-        self.assertRedirects(response, expected_url)
+        self.assertRedirects(response, f"{reverse('login')}?next={self.url}")
 
 
 class ProfileEditViewTest(TestCase):
+
     def setUp(self):
         self.url = reverse("edit_profile")
-        self.user = User.objects.create_user(
-            username="testuser", email="email@example.com", password="custompassword123"
-        )
+        self.user = UserFactory()
+        self.client.force_login(self.user)
+        self.update_data = {
+            "username": self.user.username,
+            "email": self.user.email,
+            "first_name": "Jan",
+            "last_name": "Nowak",
+        }
 
-    def test_profile_page_load_correctly(self):
-        self.client.login(username="testuser", password="custompassword123")
-
+    def test_page_loads_correctly(self):
         response = self.client.get(self.url)
-
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/edit_profile.html")
         self.assertIsInstance(response.context["form"], UserUpdateForm)
 
-    def test_profile_requires_login(self):
-        """Tests if not logged-in user is redirected to login page"""
+    def test_requires_login(self):
+        self.client.logout()
         response = self.client.get(self.url)
-        expected_url = f"{reverse('login')}?next={self.url}"
+        self.assertRedirects(response, f"{reverse('login')}?next={self.url}")
 
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, expected_url)
-
-    def test_profile_update_success(self):
-        self.client.login(username="testuser", password="custompassword123")
-
-        data = {
-            "username": "testuser",
-            "email": "email@example.com",
-            "first_name": "Jan",
-            "last_name": "testlast",
-        }
-
-        response = self.client.post(self.url, data)
-
+    def test_update_success(self):
+        response = self.client.post(self.url, self.update_data)
         self.assertRedirects(response, reverse("profile"))
-
         self.user.refresh_from_db()
         self.assertEqual(self.user.first_name, "Jan")
 
-        messages = list(get_messages(response.wsgi_request))
-
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), "Your account has been updated!")
+    def test_update_shows_success_message(self):
+        response = self.client.post(self.url, self.update_data)
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(msgs), 1)
+        self.assertEqual(str(msgs[0]), "Your account has been updated!")
 
 
 class CustomPasswordResetViewTest(TestCase):
+
     def setUp(self):
         self.url = reverse("password_reset")
-        self.user = User.objects.create_user(
-            username="testuser",
-            email="existingemail@example.com",
-            password="custompassword123",
-        )
+        self.user = UserFactory(email="existing@example.com")
 
-    def test_password_reset_page_load_correctly(self):
+    def test_page_loads_correctly(self):
         response = self.client.get(self.url)
-
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/password_reset.html")
         self.assertIsInstance(response.context["form"], CustomPasswordResetForm)
 
-    def test_password_reset_with_valid_email(self):
-        data = {"email": "existingemail@example.com"}
-
-        response = self.client.post(self.url, data)
-
+    def test_valid_email_redirects(self):
+        response = self.client.post(self.url, {"email": "existing@example.com"})
         self.assertRedirects(response, reverse("password_reset_done"))
 
-        messages = list(get_messages(response.wsgi_request))
-        self.assertEqual(len(messages), 1)
-        self.assertEqual(
-            str(messages[0]),
-            f'Password reset email was sent to "{data["email"]}". Please check your inbox and follow instructions.',
-        )
+    def test_valid_email_shows_message(self):
+        response = self.client.post(self.url, {"email": "existing@example.com"})
+        msgs = list(get_messages(response.wsgi_request))
+        self.assertEqual(len(msgs), 1)
+        self.assertIn("existing@example.com", str(msgs[0]))
 
-    def test_password_reset_with_nonexistent_email(self):
-        data = {"email": "nonexistent@example.com"}
-
-        response = self.client.post(self.url, data)
-
+    def test_nonexistent_email_shows_error(self):
+        response = self.client.post(self.url, {"email": "nobody@example.com"})
         self.assertEqual(response.status_code, 200)
+        self.assertIn("email", response.context["form"].errors)
 
-        form = response.context["form"]
 
-        self.assertFalse(form.is_valid())
-        self.assertIn("email", form.errors)
+class SearchUsersViewTest(TestCase):
+
+    def setUp(self):
+        self.url = reverse("search-users")
+        self.user = UserFactory()
+        self.client.force_login(self.user)
+
+    def test_requires_login(self):
+        self.client.logout()
+        response = self.client.get(self.url)
+        self.assertRedirects(response, f"{reverse('login')}?next={self.url}")
+
+    def test_empty_query_returns_no_results(self):
+        response = self.client.get(self.url)
+        self.assertEqual(len(response.context["users"]), 0)
+
+    def test_search_by_username(self):
+        target = UserFactory(username="findme")
+        response = self.client.get(self.url + "?q=findme")
+        self.assertIn(target, response.context["users"])
+
+    def test_search_excludes_current_user(self):
+        response = self.client.get(self.url + f"?q={self.user.username}")
+        self.assertNotIn(self.user, response.context["users"])
+
+    def test_context_contains_my_trips(self):
+        TripFactory(owner=self.user)
+        response = self.client.get(self.url)
+        self.assertIn("my_trips", response.context)

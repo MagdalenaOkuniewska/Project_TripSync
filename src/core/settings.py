@@ -96,7 +96,7 @@ DATABASES = {
         "NAME": "tripsync_db",
         "USER": "tripsync_user",
         "PASSWORD": "TajneHaslo456#@!",
-        "HOST": "localhost",
+        "HOST": "db",  # localhost zeby lokalnie a db jesli dla konterera
         "PORT": "5432",
     }
 }
