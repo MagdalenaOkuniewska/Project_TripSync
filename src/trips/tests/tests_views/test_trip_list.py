@@ -1,79 +1,40 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from ...models import Trip, TripMember
 from django.urls import reverse
-
-User = get_user_model()
+from ...models import TripMember
+from ..factories import UserFactory, TripFactory, TripMemberFactory
 
 
 class TripListViewTest(TestCase):
+
     def setUp(self):
-        self.user = User.objects.create_user(username="user", password="testpass123")
-
-        self.other_user = User.objects.create_user(
-            username="otheruser", password="testpass123"
-        )
-
-        self.trip = Trip.objects.create(
-            title="My Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.user,
-        )
-
+        self.user = UserFactory()
+        self.trip = TripFactory(owner=self.user, title="My Trip")
         self.url = reverse("trip-list")
-
-    def login_user(self):
-        self.client.login(username="user", password="testpass123")
+        self.client.force_login(self.user)
 
     def test_requires_login(self):
+        self.client.logout()
         response = self.client.get(self.url)
-        expected_url = f"{reverse('login')}?next={self.url}"
-
-        self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, expected_url)
+        self.assertRedirects(response, f"{reverse('login')}?next={self.url}")
 
     def test_page_loads_correctly(self):
-        self.login_user()
-
         response = self.client.get(self.url)
-
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "trips/trip_list.html")
 
-    def test_show_owned_trips(self):
-        self.login_user()
+    def test_shows_owned_trips(self):
         response = self.client.get(self.url)
-
         self.assertContains(response, "My Trip")
 
-    def test_show_member_trips(self):
-        self.login_user()
-        self.member_trip = Trip.objects.create(
-            title="Member Trips",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.other_user,
-        )
-        TripMember.objects.create(trip=self.member_trip, user=self.user)
-
+    def test_shows_member_trips(self):
+        other = UserFactory()
+        member_trip = TripFactory(owner=other, title="Member Trip")
+        TripMemberFactory(trip=member_trip, user=self.user)
         response = self.client.get(self.url)
-
-        self.assertContains(response, "Member Trips")
+        self.assertContains(response, "Member Trip")
 
     def test_does_not_show_other_user_trips(self):
-        self.login_user()
-
-        self.other_trip = Trip.objects.create(
-            title="Other Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.other_user,
-        )
-
+        other = UserFactory()
+        TripFactory(owner=other, title="Other Trip")
         response = self.client.get(self.url)
-
         self.assertNotContains(response, "Other Trip")

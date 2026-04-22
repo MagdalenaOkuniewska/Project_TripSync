@@ -8,7 +8,7 @@ env = environ.Env(DEBUG=(bool, False))
 
 os.environ["HOSTNAME"] = "localhost"
 
-django.core.mail.utils.DNS_NAME = "localhost"
+django.core.mail.utils.DNS_NAME._fqdn = "localhost"
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,7 +96,7 @@ DATABASES = {
         "NAME": "tripsync_db",
         "USER": "tripsync_user",
         "PASSWORD": "TajneHaslo456#@!",
-        "HOST": "db",  # localhost zeby lokalnie a db jesli dla konterera
+        "HOST": "localhost",  # localhost zeby lokalnie a db jesli dla konterera
         "PORT": "5432",
     }
 }

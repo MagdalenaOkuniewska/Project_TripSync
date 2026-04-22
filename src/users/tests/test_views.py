@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.contrib.messages import get_messages
 from django.contrib.auth import get_user_model
@@ -8,6 +8,7 @@ from .factories import UserFactory, TripFactory
 User = get_user_model()
 
 
+@override_settings(EMAIL_BACKEND="django.core.mail.backends.dummy.EmailBackend")
 class RegistrationViewTest(TestCase):
 
     def setUp(self):

@@ -1,108 +1,71 @@
 from django.test import TestCase
-from django.contrib.auth import get_user_model
-from ...models import Trip, TripMember
 from django.core.exceptions import ValidationError
-
-User = get_user_model()
+from django.db import IntegrityError
+from ..factories import UserFactory, TripFactory, TripMemberFactory
+from ...models import Trip, TripMember
 
 
 class TripModelTest(TestCase):
+
     def setUp(self):
-        self.user = User.objects.create_user(
-            username="testuser", email="email@example.com", password="testpass123"
-        )
+        self.user = UserFactory()
+        self.trip = TripFactory(owner=self.user)
 
-    def test_create_trip(self):
-        trip = Trip.objects.create(
-            title="Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.user,
-        )
+    def test_str_method(self):
+        self.assertEqual(str(self.trip), f"{self.trip.title} - {self.trip.destination}")
 
-        self.assertIsNotNone(trip.created_at)
-        self.assertEqual(trip.title, "Trip")
-        self.assertEqual(trip.destination, "Example")
-        self.assertEqual(str(trip.start_date), "2026-07-01")
-        self.assertEqual(str(trip.end_date), "2026-07-14")
-        self.assertEqual(trip.owner, self.user)
+    def test_created_at_is_set(self):
+        self.assertIsNotNone(self.trip.created_at)
 
     def test_end_date_before_start_date_raises_error(self):
         with self.assertRaises(ValidationError):
-            Trip.objects.create(
-                title="Trip",
-                destination="Example",
-                start_date="2026-07-14",
-                end_date="2026-07-01",
-                owner=self.user,
-            )
+            TripFactory(owner=self.user, start_date="2026-07-14", end_date="2026-07-01")
 
     def test_same_start_and_end_date_is_valid(self):
-        trip = Trip.objects.create(
-            title="Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-01",
-            owner=self.user,
+        trip = TripFactory(
+            owner=self.user, start_date="2026-07-01", end_date="2026-07-01"
         )
-
         self.assertEqual(trip.start_date, trip.end_date)
 
     def test_is_owner_returns_true(self):
-        trip = Trip.objects.create(
-            title="Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.user,
-        )
+        self.assertTrue(self.trip.is_owner(self.user))
 
-        result = trip.is_owner(self.user)
-        self.assertTrue(result)
-
-    def test_is_owner_returns_false_for_invalid_user(self):
-        trip = Trip.objects.create(
-            title="Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.user,
-        )
-
-        other_user = User.objects.create_user(
-            username="otheruser", password="otherpass123"
-        )
-
-        result = trip.is_owner(other_user)
-        self.assertFalse(result)
+    def test_is_owner_returns_false_for_other_user(self):
+        other = UserFactory()
+        self.assertFalse(self.trip.is_owner(other))
 
     def test_is_participant_returns_true_for_member(self):
-        trip = Trip.objects.create(
-            title="Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.user,
+        member = UserFactory()
+        TripMemberFactory(trip=self.trip, user=member)
+        self.assertTrue(self.trip.is_participant(member))
+
+    def test_owner_tripmember_created_on_save(self):
+        self.assertTrue(
+            TripMember.objects.filter(trip=self.trip, user=self.user).exists()
         )
 
-        member_user = User.objects.create_user(
-            username="memberuser", password="memberpass123"
-        )
 
-        TripMember.objects.create(trip=trip, user=member_user)
-        result = trip.is_participant(member_user)
+class TripMemberModelTest(TestCase):
 
-        self.assertTrue(result)
+    def setUp(self):
+        self.owner = UserFactory()
+        self.trip = TripFactory(owner=self.owner)
 
     def test_str_method(self):
-        trip = Trip.objects.create(
-            title="Trip",
-            destination="Example",
-            start_date="2026-07-01",
-            end_date="2026-07-14",
-            owner=self.user,
-        )
+        member = TripMember.objects.get(trip=self.trip, user=self.owner)
+        self.assertEqual(str(member), f"{self.owner.username} - {self.trip.title}")
 
-        result = str(trip)
-        self.assertEqual(result, "Trip - Example")
+    def test_owner_has_owner_role(self):
+        member = TripMember.objects.get(trip=self.trip, user=self.owner)
+        self.assertEqual(member.role, "owner")
+
+    def test_default_member_role(self):
+        other = UserFactory()
+        member = TripMemberFactory(trip=self.trip, user=other)
+        self.assertEqual(member.role, "member")
+
+    def test_duplicates_raises_error(self):
+        other = UserFactory()
+        TripMemberFactory(trip=self.trip, user=other)
+        with self.assertRaises(IntegrityError):
+            TripMemberFactory(trip=self.trip, user=other)
