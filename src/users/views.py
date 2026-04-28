@@ -19,7 +19,7 @@ from django.utils.encoding import (
 )  # force_bytes() zamienia cokolwiek (tu: liczbę) na bytes. 42 → b'42'
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.contrib.sites.shortcuts import get_current_site
-from django.core.mail import send_mail
+from .tasks import send_invite_email
 
 
 class RegistrationView(CreateView):
@@ -28,23 +28,25 @@ class RegistrationView(CreateView):
     template_name = "users/register.html"
     success_url = reverse_lazy("login")
 
-    def form_valid(self, form):
-        user = form.save(commit=False)
-        user.is_active = False  # konto nieaktywne
-        user.save()
-
+    def _create_activation_link(self, user):
         token = default_token_generator.make_token(user)  # generowanie tokenu
         uid = urlsafe_base64_encode(force_bytes(user.pk))  # kodowanie ID usera do meila
 
         current_site = get_current_site(self.request)
         activation_link = f"http://{current_site.domain}/users/activate/{uid}/{token}/"
-        email_subject = "Confirm Registration"
+        return activation_link
 
-        send_mail(
-            email_subject,
-            message=f"Click the link to activate your account {activation_link}",
-            from_email="noreply@tripsync.com",
-            recipient_list=[user.email],
+    def form_valid(self, form):
+        user = form.save(commit=False)
+        user.is_active = False  # konto nieaktywne
+        user.save()
+
+        activation_link = self._create_activation_link(user)
+
+        # import z tasks
+        send_invite_email.delay(
+            user.email,
+            activation_link=activation_link,
         )
 
         messages.info(self.request, "Check your email to activate your account.")

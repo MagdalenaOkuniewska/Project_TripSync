@@ -96,7 +96,7 @@ DATABASES = {
         "NAME": "tripsync_db",
         "USER": "tripsync_user",
         "PASSWORD": "TajneHaslo456#@!",
-        "HOST": "localhost",  # localhost zeby lokalnie a db jesli dla konterera
+        "HOST": "db",  # localhost zeby lokalnie a db jesli dla konterera
         "PORT": "5432",
     }
 }
@@ -167,3 +167,17 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 DEFAULT_FROM_EMAIL = "noreply@tripsync.com"
 SERVER_EMAIL = "noreply@tripsync.com"
+
+import os
+
+CELERY_BROKER_URL = os.environ.get("CELERY_BROKER_URL", "redis://localhost:6379/0")
+CELERY_RESULT_BACKEND = os.environ.get(
+    "CELERY_RESULT_BACKEND", "redis://localhost:6379/0"
+)
+
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
+CELERY_TIMEZONE = "Europe/Warsaw"
+CELERY_TASK_TRACK_STARTED = True
