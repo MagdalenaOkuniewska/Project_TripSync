@@ -1,15 +1,17 @@
 from pathlib import Path
 import environ
 import os
+import django.core.mail.utils
 
-
-env = environ.Env(DEBUG=(bool, False))
-
-os.environ["HOSTNAME"] = "localhost"
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 environ.Env.read_env(os.path.join(BASE_DIR.parent, ".env"))
+
+env = environ.Env(DEBUG=(bool, False))
+
+os.environ["HOSTNAME"] = "localhost"
+django.core.mail.utils.DNS_NAME._fqdn = "localhost"
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "core.settings")
 
@@ -43,16 +45,14 @@ INSTALLED_EXTENSIONS = [
     "notifications.apps.NotificationsConfig",
     "logs.apps.LogsConfig",
     "crispy_forms",
-    "crispy_bootstrap4",
-    "silk",
-    "storages",
+    "crispy_bootstrap5",
 ]
 
 INSTALLED_APPS += INSTALLED_EXTENSIONS
 
 MIDDLEWARE = [
-    "silk.middleware.SilkyMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -60,6 +60,10 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
+
+if DEBUG:
+    INSTALLED_APPS += ["silk"]
+    MIDDLEWARE.insert(0, "silk.middleware.SilkyMiddleware")
 
 ROOT_URLCONF = "core.urls"
 
@@ -74,7 +78,6 @@ TEMPLATES = [
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "django.template.context_processors.media",
-                "django.template.context_processors.request",
                 "notifications.context_processors.count_unread_notifications",
             ],
         },
@@ -95,7 +98,7 @@ DATABASES = {
         "PASSWORD": env("DB_PASSWORD"),
         "HOST": env(
             "DB_HOST"
-        ),  # "HOST": "db",  # localhost zeby lokalnie a db jesli dla konterera
+        ),  # "HOST": "db" w Dockerze, "localhost" przy uruchamianiu natywnym
         "PORT": env("DB_PORT"),
     }
 }
@@ -145,6 +148,15 @@ STATICFILES_DIRS = [
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
@@ -153,16 +165,19 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "users.CustomUser"
 
-CRISPY_TEMPLATE_PACK = "bootstrap4"
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "/users/profile/"
 LOGOUT_REDIRECT_URL = "home"
 
-
 MESSAGE_STORAGE = "django.contrib.messages.storage.session.SessionStorage"
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
+EMAIL_BACKEND = env(
+    "EMAIL_BACKEND",
+    default="django.core.mail.backends.console.EmailBackend",
+)
 
 DEFAULT_FROM_EMAIL = "noreply@tripsync.com"
 SERVER_EMAIL = "noreply@tripsync.com"
