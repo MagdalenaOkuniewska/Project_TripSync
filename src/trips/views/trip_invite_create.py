@@ -22,9 +22,8 @@ class TripInviteCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
         return context
 
     def test_func(self):
-        self.trip = Trip.objects.get(
-            id=self.kwargs["trip_id"]
-        )  # self -> atrybut klasy użyty w innych metodach poniżej
+        # self.trip -> atrybut klasy użyty w innych metodach poniżej
+        self.trip = get_object_or_404(Trip, pk=self.kwargs["trip_id"])
         return self.trip.owner == self.request.user
 
     def handle_no_permission(self):
