@@ -2,7 +2,7 @@ from celery import shared_task
 from django.core.mail import send_mail
 
 
-def send_invite_email(user_email, activation_link):
+def send_activation_email(user_email, activation_link):
     email_subject = "Confirm Registration"
 
     send_mail(
@@ -16,8 +16,8 @@ def send_invite_email(user_email, activation_link):
 @shared_task(
     bind=True,
 )
-def send_invite_email_async(self, user_email, activation_link):
+def send_activation_email_async(self, user_email, activation_link):
     try:
-        send_invite_email(user_email, activation_link)
+        send_activation_email(user_email, activation_link)
     except Exception as e:
         raise self.retry(exc=e, countdown=5)

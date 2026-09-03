@@ -25,7 +25,7 @@ from django.utils.http import (
     url_has_allowed_host_and_scheme,
 )
 from django.contrib.sites.shortcuts import get_current_site
-from .tasks import send_invite_email, send_invite_email_async
+from .tasks import send_activation_email, send_activation_email_async
 
 
 class RegistrationView(CreateView):
@@ -62,9 +62,9 @@ class RegistrationView(CreateView):
         activation_link = self._create_activation_link(user)
 
         if settings.DEBUG:
-            send_invite_email(user.email, activation_link=activation_link)
+            send_activation_email(user.email, activation_link=activation_link)
         else:
-            send_invite_email_async.delay(
+            send_activation_email_async.delay(
                 user.email,
                 activation_link=activation_link,
             )
