@@ -7,7 +7,6 @@ from ..factories import TripFactory, TripMemberFactory, UserFactory
 
 
 class TripModelTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)
@@ -47,7 +46,6 @@ class TripModelTest(TestCase):
 
 
 class TripMemberModelTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.trip = TripFactory(owner=self.owner)

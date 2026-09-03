@@ -5,7 +5,6 @@ from .factories import NotificationFactory, UserFactory
 
 
 class NotificationModelTest(TestCase):
-
     def setUp(self):
         self.recipient = UserFactory()
         self.sender = UserFactory()

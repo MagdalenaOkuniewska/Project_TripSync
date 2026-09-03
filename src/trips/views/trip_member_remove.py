@@ -8,7 +8,6 @@ from ..models import TripMember
 
 
 class TripMemberRemoveView(LoginRequiredMixin, UserPassesTestMixin, View):
-
     def test_func(self):
         member = get_object_or_404(TripMember, pk=self.kwargs["member_id"])
         return member.trip.is_owner(self.request.user)

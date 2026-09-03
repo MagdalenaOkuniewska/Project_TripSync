@@ -7,7 +7,6 @@ from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteRespondViewTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.invited = UserFactory()

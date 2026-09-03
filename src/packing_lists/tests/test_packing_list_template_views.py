@@ -13,7 +13,6 @@ from .factories import (
 
 
 class PackingListTemplateListViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.url = reverse("packing-list-template-list")
@@ -40,7 +39,6 @@ class PackingListTemplateListViewTest(TestCase):
 
 
 class PackingListTemplateCreateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.url = reverse("packing-list-template-create")
@@ -76,7 +74,6 @@ class PackingListTemplateCreateViewTest(TestCase):
 
 
 class PackingListTemplateDetailViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.template = PackingListTemplateFactory(user=self.user)
@@ -105,7 +102,6 @@ class PackingListTemplateDetailViewTest(TestCase):
 
 
 class PackingListTemplateUpdateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.template = PackingListTemplateFactory(user=self.user)
@@ -138,7 +134,6 @@ class PackingListTemplateUpdateViewTest(TestCase):
 
 
 class PackingListTemplateDeleteViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.template = PackingListTemplateFactory(user=self.user)
@@ -179,7 +174,6 @@ class PackingListTemplateDeleteViewTest(TestCase):
 
 
 class ApplyPackingListTemplateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)

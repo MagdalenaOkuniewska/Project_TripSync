@@ -7,7 +7,6 @@ from .factories import AuditLogFactory, TripFactory, UserFactory
 
 
 class TripAuditLogViewTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.trip = TripFactory(owner=self.owner)

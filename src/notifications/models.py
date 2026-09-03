@@ -6,7 +6,6 @@ User = get_user_model()
 
 
 class Notification(models.Model):
-
     NOTIFICATION_TYPE_CHOICES = [
         ("trip_invite", "Trip Invite"),
         ("invite_accepted", "Invite Accepted"),

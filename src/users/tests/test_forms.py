@@ -12,7 +12,6 @@ User = get_user_model()
 
 
 class UserRegistrationFormTest(TestCase):
-
     def test_valid_data(self):
         form = UserRegistrationForm(
             data={
@@ -38,7 +37,6 @@ class UserRegistrationFormTest(TestCase):
 
 
 class UserUpdateFormTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
 
@@ -80,7 +78,6 @@ class UserUpdateFormTest(TestCase):
 
 
 class CustomPasswordResetFormTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory(email="existing@example.com")
 

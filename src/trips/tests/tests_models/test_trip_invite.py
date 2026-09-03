@@ -10,7 +10,6 @@ from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteModelTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.trip = TripFactory(owner=self.owner)

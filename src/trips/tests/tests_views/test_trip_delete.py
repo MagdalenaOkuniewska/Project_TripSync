@@ -7,7 +7,6 @@ from ..factories import TripFactory, UserFactory
 
 
 class TripDeleteViewTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.other = UserFactory()

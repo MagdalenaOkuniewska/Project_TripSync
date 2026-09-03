@@ -7,7 +7,6 @@ from ..factories import TripFactory, UserFactory
 
 
 class TripInviteCreateViewTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.trip = TripFactory(owner=self.owner, title="My Trip")

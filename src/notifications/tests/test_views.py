@@ -8,7 +8,6 @@ from .factories import NotificationFactory, UserFactory
 
 
 class NotificationListViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.url = reverse("notification-list")
@@ -50,7 +49,6 @@ class NotificationListViewTest(TestCase):
 
 
 class NotificationMarkReadViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.notification = NotificationFactory(recipient=self.user, is_read=False)
@@ -89,7 +87,6 @@ class NotificationMarkReadViewTest(TestCase):
 
 
 class NotificationMarkAllReadViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.url = reverse("notification-mark-all-read")
@@ -134,7 +131,6 @@ class NotificationMarkAllReadViewTest(TestCase):
 
 
 class NotificationDeleteViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.notification = NotificationFactory(recipient=self.user)

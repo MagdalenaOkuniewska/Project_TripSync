@@ -8,7 +8,6 @@ from .factories import AuditLogFactory, TripFactory, UserFactory
 
 
 class AuditLogModelTest(TestCase):
-
     def setUp(self):
         self.performer = UserFactory()
         self.affected = UserFactory()
@@ -44,7 +43,6 @@ class AuditLogModelTest(TestCase):
 
 
 class LogActionUtilTest(TestCase):
-
     def setUp(self):
         self.performer = UserFactory()
         self.affected = UserFactory()

@@ -12,7 +12,6 @@ from .factories import (
 
 
 class PackingItemTemplateCreateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.template = PackingListTemplateFactory(user=self.user)
@@ -56,7 +55,6 @@ class PackingItemTemplateCreateViewTest(TestCase):
 
 
 class PackingItemTemplateUpdateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.template = PackingListTemplateFactory(user=self.user)
@@ -98,7 +96,6 @@ class PackingItemTemplateUpdateViewTest(TestCase):
 
 
 class PackingItemTemplateDeleteViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.template = PackingListTemplateFactory(user=self.user)

@@ -26,7 +26,6 @@ def user_can_access_trip(user, trip):
 
 
 class ShoppingListCreateView(LoginRequiredMixin, UserPassesTestMixin, View):
-
     def test_func(self):
         trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])
         return trip.is_owner(self.request.user)

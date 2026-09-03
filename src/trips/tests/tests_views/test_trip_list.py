@@ -5,7 +5,6 @@ from ..factories import TripFactory, TripMemberFactory, UserFactory
 
 
 class TripListViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user, title="My Trip")

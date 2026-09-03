@@ -4,7 +4,6 @@ from ..forms import TripForm
 
 
 class TripFormTest(TestCase):
-
     def test_valid_data(self):
         form_data = {
             "title": "Trip",

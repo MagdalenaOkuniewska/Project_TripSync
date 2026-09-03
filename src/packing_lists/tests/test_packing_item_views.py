@@ -9,7 +9,6 @@ from .factories import PackingItemFactory, PackingListFactory, TripFactory, User
 
 
 class PackingItemCreateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)
@@ -70,7 +69,6 @@ class PackingItemCreateViewTest(TestCase):
 
 
 class PackingItemUpdateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)
@@ -115,7 +113,6 @@ class PackingItemUpdateViewTest(TestCase):
 
 
 class PackingItemDeleteViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)

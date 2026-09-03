@@ -5,7 +5,6 @@ from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteSentListViewTest(TestCase):
-
     def setUp(self):
         self.owner = UserFactory()
         self.trip = TripFactory(owner=self.owner)

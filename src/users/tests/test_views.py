@@ -11,7 +11,6 @@ User = get_user_model()
 
 @override_settings(EMAIL_BACKEND="django.core.mail.backends.dummy.EmailBackend")
 class RegistrationViewTest(TestCase):
-
     def setUp(self):
         self.url = reverse("register")
         self.valid_data = {
@@ -57,7 +56,6 @@ class RegistrationViewTest(TestCase):
 
 
 class ProfileViewTest(TestCase):
-
     def setUp(self):
         self.url = reverse("profile")
         self.user = UserFactory()
@@ -82,7 +80,6 @@ class ProfileViewTest(TestCase):
 
 
 class ProfileEditViewTest(TestCase):
-
     def setUp(self):
         self.url = reverse("edit_profile")
         self.user = UserFactory()
@@ -119,7 +116,6 @@ class ProfileEditViewTest(TestCase):
 
 
 class CustomPasswordResetViewTest(TestCase):
-
     def setUp(self):
         self.url = reverse("password_reset")
         self.user = UserFactory(email="existing@example.com")
@@ -147,7 +143,6 @@ class CustomPasswordResetViewTest(TestCase):
 
 
 class SearchUsersViewTest(TestCase):
-
     def setUp(self):
         self.url = reverse("search-users")
         self.user = UserFactory()

@@ -4,7 +4,6 @@ from .factories import ShoppingItemFactory, ShoppingListFactory, UserFactory
 
 
 class ShoppingListModelTest(TestCase):
-
     def setUp(self):
         self.shopping_list = ShoppingListFactory()
 
@@ -15,7 +14,6 @@ class ShoppingListModelTest(TestCase):
 
 
 class ShoppingItemModelTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.item = ShoppingItemFactory(added_by=self.user)

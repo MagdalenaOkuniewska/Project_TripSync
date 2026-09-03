@@ -6,7 +6,6 @@ from ..factories import TripFactory, UserFactory
 
 
 class TripUpdateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.other = UserFactory()

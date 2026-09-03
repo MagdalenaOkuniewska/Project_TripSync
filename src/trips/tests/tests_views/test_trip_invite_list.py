@@ -8,7 +8,6 @@ from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteListViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.owner = UserFactory()

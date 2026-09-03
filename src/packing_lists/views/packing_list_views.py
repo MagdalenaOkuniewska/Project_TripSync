@@ -89,7 +89,9 @@ class PackingListCreateSharedView(LoginRequiredMixin, UserPassesTestMixin, View)
 
         # Create shared list
         packing_list = PackingList.objects.create(
-            trip=trip, list_type="shared", user=None  # Shared list has no specific user
+            trip=trip,
+            list_type="shared",
+            user=None,  # Shared list has no specific user
         )
 
         messages.success(request, f'Team packing list created for "{trip.title}"!')

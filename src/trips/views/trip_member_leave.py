@@ -8,7 +8,6 @@ from ..models import Trip, TripMember
 
 
 class TripMemberLeaveView(LoginRequiredMixin, View):
-
     def get(self, request, trip_id):
         trip = get_object_or_404(Trip, pk=trip_id)
         member = get_object_or_404(TripMember, trip=trip, user=request.user)

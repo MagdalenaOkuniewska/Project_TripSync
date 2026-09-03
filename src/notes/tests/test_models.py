@@ -6,7 +6,6 @@ from .factories import NoteFactory, TripFactory, UserFactory
 
 
 class NoteModelTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)

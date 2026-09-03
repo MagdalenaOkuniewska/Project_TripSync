@@ -8,7 +8,6 @@ from ..factories import UserFactory
 
 
 class TripCreateViewTest(TestCase):
-
     def setUp(self):
         self.url = reverse("trip-create")
         self.user = UserFactory()

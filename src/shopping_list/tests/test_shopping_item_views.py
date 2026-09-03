@@ -14,7 +14,6 @@ from .factories import (
 
 
 class ShoppingItemCreateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)
@@ -75,7 +74,6 @@ class ShoppingItemCreateViewTest(TestCase):
 
 
 class ShoppingItemUpdateViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)
@@ -125,7 +123,6 @@ class ShoppingItemUpdateViewTest(TestCase):
 
 
 class ShoppingItemDeleteViewTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)

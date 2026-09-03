@@ -7,7 +7,6 @@ from .factories import NotificationFactory, UserFactory
 
 
 class CountUnreadNotificationsTest(TestCase):
-
     def setUp(self):
         self.factory = RequestFactory()
 

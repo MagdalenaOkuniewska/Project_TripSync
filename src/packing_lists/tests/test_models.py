@@ -11,7 +11,6 @@ from .factories import (
 
 
 class PackingListModelTest(TestCase):
-
     def test_str_private_list(self):
         user = UserFactory()
         trip = TripFactory(owner=user)
@@ -26,7 +25,6 @@ class PackingListModelTest(TestCase):
 
 
 class PackingItemModelTest(TestCase):
-
     def setUp(self):
         self.user = UserFactory()
         self.trip = TripFactory(owner=self.user)
@@ -60,7 +58,6 @@ class PackingItemModelTest(TestCase):
 
 
 class PackingListTemplateModelTest(TestCase):
-
     def test_str_method(self):
         template = PackingListTemplateFactory(name="Summer Trip")
         self.assertEqual(str(template), "Summer Trip")
@@ -80,7 +77,6 @@ class PackingListTemplateModelTest(TestCase):
 
 
 class PackingItemTemplateModelTest(TestCase):
-
     def test_str_method(self):
         item = PackingItemTemplateFactory(name="Sunscreen", quantity=2)
         self.assertEqual(str(item), "Sunscreen: x2")
