@@ -78,11 +78,11 @@ jobs:
           pip install coverage
 
       - name: Run migrations
-        run: python manage.py migrate --no-input
+        run: python src/manage.py migrate --no-input
 
       - name: Run tests with coverage
         run: |
-          coverage run manage.py test --no-input --verbosity 2
+          coverage run src/manage.py test --no-input --verbosity 2
           coverage report
           coverage xml
           coverage html
