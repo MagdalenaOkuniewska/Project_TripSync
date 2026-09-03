@@ -7,4 +7,5 @@ exclude = [
 [lint]
 ignore = [
     "RUF012",
+    "EXE001"
 ]
