@@ -1,13 +1,13 @@
 import uuid
 
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
+from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.db import models
 from django.utils import timezone
 
 from logs.utils import log_action
 from notifications.models import Notification
-from shopping_list.models import ShoppingList
+
 
 User = get_user_model()
 
@@ -44,7 +44,7 @@ class Trip(models.Model):
     def has_shopping_list(self):
         try:
             return self.shopping_list is not None
-        except ShoppingList.DoesNotExist:
+        except ObjectDoesNotExist:
             return False
 
     def __str__(self):
