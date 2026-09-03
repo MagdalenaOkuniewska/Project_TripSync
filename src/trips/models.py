@@ -1,13 +1,12 @@
 import uuid
 
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.db import models
 from django.utils import timezone
 
 from logs.utils import log_action
 from notifications.models import Notification
-
 
 User = get_user_model()
 
