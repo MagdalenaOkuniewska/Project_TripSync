@@ -1,10 +1,12 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.views.generic import DetailView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from ..models import Trip
+
 from notes.models import Note
 from shopping_list.models import ShoppingList
+
+from ..models import Trip
 
 
 class TripDetailView(LoginRequiredMixin, UserPassesTestMixin, DetailView):

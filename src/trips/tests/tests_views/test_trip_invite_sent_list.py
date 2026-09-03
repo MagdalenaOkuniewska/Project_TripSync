@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.urls import reverse
-from ..factories import UserFactory, TripFactory, TripInviteFactory
+
+from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteSentListViewTest(TestCase):

@@ -1,7 +1,9 @@
 from django.test import TestCase
 from django.urls import reverse
+
 from trips.models import TripMember
-from .factories import UserFactory, TripFactory, AuditLogFactory
+
+from .factories import AuditLogFactory, TripFactory, UserFactory
 
 
 class TripAuditLogViewTest(TestCase):

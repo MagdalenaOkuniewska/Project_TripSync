@@ -1,8 +1,9 @@
 from django.contrib import messages
-from django.core.exceptions import ValidationError
-from django.shortcuts import redirect, get_object_or_404, render
-from django.views.generic import View
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.core.exceptions import ValidationError
+from django.shortcuts import get_object_or_404, redirect, render
+from django.views.generic import View
+
 from ..models import TripMember
 
 

@@ -1,9 +1,11 @@
-import factory
 from datetime import date
+
+import factory
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
-from trips.models import Trip
+
 from logs.models import AuditLog
+from trips.models import Trip
 
 User = get_user_model()
 

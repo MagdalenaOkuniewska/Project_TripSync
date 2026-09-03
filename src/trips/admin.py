@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import Trip, TripMember, TripInvite
+
+from .models import Trip, TripInvite, TripMember
 
 
 @admin.register(Trip)

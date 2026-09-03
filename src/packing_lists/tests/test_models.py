@@ -1,11 +1,12 @@
 from django.test import TestCase
+
 from .factories import (
-    UserFactory,
-    TripFactory,
-    PackingListFactory,
     PackingItemFactory,
-    PackingListTemplateFactory,
     PackingItemTemplateFactory,
+    PackingListFactory,
+    PackingListTemplateFactory,
+    TripFactory,
+    UserFactory,
 )
 
 

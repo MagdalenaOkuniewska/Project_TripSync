@@ -1,9 +1,10 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.core.exceptions import ValidationError
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import DeleteView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+
 from ..models import TripInvite
 
 

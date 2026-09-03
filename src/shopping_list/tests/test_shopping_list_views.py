@@ -1,9 +1,11 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
-from trips.models import TripMember
+
 from shopping_list.models import ShoppingList
-from .factories import UserFactory, TripFactory, ShoppingListFactory
+from trips.models import TripMember
+
+from .factories import ShoppingListFactory, TripFactory, UserFactory
 
 
 class ShoppingListCreateViewTest(TestCase):

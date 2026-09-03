@@ -1,8 +1,10 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
+
 from notifications.models import Notification
-from .factories import UserFactory, NotificationFactory
+
+from .factories import NotificationFactory, UserFactory
 
 
 class NotificationListViewTest(TestCase):

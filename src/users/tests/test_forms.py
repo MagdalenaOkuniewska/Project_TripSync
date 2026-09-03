@@ -1,9 +1,11 @@
 from io import BytesIO
-from PIL import Image
-from django.test import TestCase
-from django.core.files.uploadedfile import SimpleUploadedFile
+
 from django.contrib.auth import get_user_model
-from ..forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase
+from PIL import Image
+
+from ..forms import CustomPasswordResetForm, UserRegistrationForm, UserUpdateForm
 from .factories import UserFactory
 
 User = get_user_model()

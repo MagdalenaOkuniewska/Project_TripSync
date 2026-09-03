@@ -1,12 +1,14 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
-from packing_lists.models import PackingListTemplate, PackingList
+
+from packing_lists.models import PackingList, PackingListTemplate
+
 from .factories import (
-    UserFactory,
-    TripFactory,
-    PackingListTemplateFactory,
     PackingItemTemplateFactory,
+    PackingListTemplateFactory,
+    TripFactory,
+    UserFactory,
 )
 
 

@@ -1,8 +1,10 @@
-from django.test import TestCase
 from django.contrib.contenttypes.models import ContentType
+from django.test import TestCase
+
 from logs.models import AuditLog
 from logs.utils import log_action
-from .factories import UserFactory, TripFactory, AuditLogFactory
+
+from .factories import AuditLogFactory, TripFactory, UserFactory
 
 
 class AuditLogModelTest(TestCase):

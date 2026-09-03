@@ -1,10 +1,13 @@
-from django.utils import timezone
-from django.db import models
+import uuid
+
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from notifications.models import Notification
+from django.db import models
+from django.utils import timezone
+
 from logs.utils import log_action
-import uuid
+from notifications.models import Notification
+from shopping_list.models import ShoppingList
 
 User = get_user_model()
 
@@ -21,9 +24,8 @@ class Trip(models.Model):
     invite_token = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
 
     def validate_dates(self):
-        if self.start_date and self.end_date:
-            if self.start_date > self.end_date:
-                raise ValidationError("Start date must be before end date")
+        if self.start_date and self.end_date and self.start_date > self.end_date:
+            raise ValidationError("Start date must be before end date")
 
     def save(self, *args, **kwargs):
         self.validate_dates()
@@ -42,7 +44,7 @@ class Trip(models.Model):
     def has_shopping_list(self):
         try:
             return self.shopping_list is not None
-        except Exception:
+        except ShoppingList.DoesNotExist:
             return False
 
     def __str__(self):

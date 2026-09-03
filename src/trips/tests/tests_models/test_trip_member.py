@@ -1,7 +1,8 @@
-from django.test import TestCase
 from django.db import IntegrityError
-from ..factories import UserFactory, TripFactory, TripMemberFactory
+from django.test import TestCase
+
 from ...models import TripMember
+from ..factories import TripFactory, TripMemberFactory, UserFactory
 
 
 class TripMemberModelTest(TestCase):

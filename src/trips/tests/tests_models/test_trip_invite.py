@@ -1,10 +1,12 @@
-from django.test import TestCase
+from datetime import timedelta
+
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
+from django.test import TestCase
 from django.utils import timezone
-from datetime import timedelta
-from ..factories import UserFactory, TripFactory, TripInviteFactory
-from ...models import TripMember, TripInvite
+
+from ...models import TripInvite, TripMember
+from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteModelTest(TestCase):

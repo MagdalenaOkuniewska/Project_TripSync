@@ -1,13 +1,14 @@
-from django.urls import path
-from .views import (
-    RegistrationView,
-    ProfileView,
-    ProfileEditView,
-    CustomPasswordResetView,
-    SearchUsersView,
-    ActivateView,
-)
 from django.contrib.auth import views as auth_views
+from django.urls import path
+
+from .views import (
+    ActivateView,
+    CustomPasswordResetView,
+    ProfileEditView,
+    ProfileView,
+    RegistrationView,
+    SearchUsersView,
+)
 
 urlpatterns = [
     path("register/", RegistrationView.as_view(), name="register"),

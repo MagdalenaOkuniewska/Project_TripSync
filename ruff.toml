@@ -1,0 +1,10 @@
+line-length = 88
+
+exclude = [
+    "*/migrations/*",
+]
+
+[lint]
+ignore = [
+    "RUF012",
+]

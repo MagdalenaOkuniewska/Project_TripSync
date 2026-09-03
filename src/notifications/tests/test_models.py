@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
-from .factories import UserFactory, NotificationFactory
+
+from .factories import NotificationFactory, UserFactory
 
 
 class NotificationModelTest(TestCase):

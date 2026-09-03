@@ -1,17 +1,19 @@
-from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect, get_object_or_404
-from ..models import PackingListTemplate, PackingList
-from trips.models import Trip
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.views.generic import (
-    ListView,
-    DetailView,
     CreateView,
     DeleteView,
+    DetailView,
+    ListView,
     UpdateView,
     View,
 )
+
+from trips.models import Trip
+
+from ..models import PackingList, PackingListTemplate
 
 
 def user_owns_template(user, template):
@@ -70,10 +72,7 @@ class ApplyPackingListTemplateView(LoginRequiredMixin, UserPassesTestMixin, View
         if not user_can_apply_template_to_trip(self.request.user, trip):
             return False
 
-        if user_already_has_packing_list(self.request.user, trip):
-            return False
-
-        return True
+        return not user_already_has_packing_list(self.request.user, trip)
 
     def post(self, request, *args, **kwargs):
         trip = get_object_or_404(Trip, pk=self.kwargs["trip_pk"])

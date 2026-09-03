@@ -1,7 +1,9 @@
-from django.test import TestCase, RequestFactory
 from django.contrib.auth.models import AnonymousUser
+from django.test import RequestFactory, TestCase
+
 from notifications.context_processors import count_unread_notifications
-from .factories import UserFactory, NotificationFactory
+
+from .factories import NotificationFactory, UserFactory
 
 
 class CountUnreadNotificationsTest(TestCase):

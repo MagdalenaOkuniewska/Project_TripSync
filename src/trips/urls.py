@@ -1,19 +1,20 @@
 from django.urls import path
+
 from .views import (
-    TripListView,
     TripCreateView,
-    TripDetailView,
-    TripUpdateView,
     TripDeleteView,
-    TripInviteCreateView,
-    TripMemberListView,
-    TripInviteListView,
+    TripDetailView,
     TripInviteCancelView,
-    TripInviteSentListView,
+    TripInviteCreateView,
+    TripInviteListView,
     TripInviteRespondView,
-    TripMemberLeaveView,
-    TripMemberRemoveView,
+    TripInviteSentListView,
     TripJoinByLinkView,
+    TripListView,
+    TripMemberLeaveView,
+    TripMemberListView,
+    TripMemberRemoveView,
+    TripUpdateView,
 )
 
 urlpatterns = [

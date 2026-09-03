@@ -1,14 +1,15 @@
 from django.urls import path
-from .views.shopping_list_views import (
-    ShoppingListCreateView,
-    ShoppingListDetailView,
-    ShoppingListDeleteView,
-    toggle_item_purchased,
-)
+
 from .views.shopping_item_views import (
     ShoppingItemCreateView,
-    ShoppingItemUpdateView,
     ShoppingItemDeleteView,
+    ShoppingItemUpdateView,
+)
+from .views.shopping_list_views import (
+    ShoppingListCreateView,
+    ShoppingListDeleteView,
+    ShoppingListDetailView,
+    toggle_item_purchased,
 )
 
 urlpatterns = [

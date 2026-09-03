@@ -1,18 +1,21 @@
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
 import json
-from django.urls import reverse_lazy
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect, get_object_or_404
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
 from django.views.generic import (
     DeleteView,
     DetailView,
     View,
 )
-from ..models import ShoppingList, ShoppingItem
+
 from trips.models import Trip
+
+from ..models import ShoppingItem, ShoppingList
 
 # ListView nie ponieważ jeden Trip => 1 grupowy shopping list , brak private/shared itd => bedzie przycisk See Shopping List itd
 
@@ -124,5 +127,5 @@ def toggle_item_purchased(request, item_id):
 
     except ShoppingItem.DoesNotExist:
         return JsonResponse({"success": False, "error": "Item not found"}, status=404)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return JsonResponse({"success": False, "error": str(e)}, status=500)

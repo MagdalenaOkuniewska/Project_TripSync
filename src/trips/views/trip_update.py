@@ -1,10 +1,11 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.views.generic import UpdateView
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from ..models import Trip
+
 from ..forms import TripForm
+from ..models import Trip
 
 
 class TripUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):

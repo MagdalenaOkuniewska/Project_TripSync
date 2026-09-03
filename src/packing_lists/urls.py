@@ -1,31 +1,32 @@
 from django.urls import path
-from .views.packing_list_template_views import (
-    PackingListTemplateListView,
-    PackingListTemplateCreateView,
-    PackingListTemplateDetailView,
-    PackingListTemplateUpdateView,
-    PackingListTemplateDeleteView,
-    ApplyPackingListTemplateView,
-    SelectTemplateForTripView,
-)
+
 from .views.packing_item_template_views import (
     PackingItemTemplateCreateView,
-    PackingItemTemplateUpdateView,
     PackingItemTemplateDeleteView,
-)
-from .views.packing_list_views import (
-    PackingListDetailView,
-    PackingListCreateView,
-    PackingListDeleteView,
-    PackingListsForTripView,
-    SavePackingListAsTemplateView,
-    PackingListCreateSharedView,
-    toggle_item_packed,
+    PackingItemTemplateUpdateView,
 )
 from .views.packing_item_views import (
     PackingItemCreateView,
-    PackingItemUpdateView,
     PackingItemDeleteView,
+    PackingItemUpdateView,
+)
+from .views.packing_list_template_views import (
+    ApplyPackingListTemplateView,
+    PackingListTemplateCreateView,
+    PackingListTemplateDeleteView,
+    PackingListTemplateDetailView,
+    PackingListTemplateListView,
+    PackingListTemplateUpdateView,
+    SelectTemplateForTripView,
+)
+from .views.packing_list_views import (
+    PackingListCreateSharedView,
+    PackingListCreateView,
+    PackingListDeleteView,
+    PackingListDetailView,
+    PackingListsForTripView,
+    SavePackingListAsTemplateView,
+    toggle_item_packed,
 )
 
 urlpatterns = [

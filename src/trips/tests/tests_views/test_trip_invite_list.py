@@ -1,8 +1,10 @@
+from datetime import timedelta
+
 from django.test import TestCase
 from django.urls import reverse
 from django.utils import timezone
-from datetime import timedelta
-from ..factories import UserFactory, TripFactory, TripInviteFactory
+
+from ..factories import TripFactory, TripInviteFactory, UserFactory
 
 
 class TripInviteListViewTest(TestCase):

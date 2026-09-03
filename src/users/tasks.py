@@ -19,5 +19,5 @@ def send_activation_email(user_email, activation_link):
 def send_activation_email_async(self, user_email, activation_link):
     try:
         send_activation_email(user_email, activation_link)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         raise self.retry(exc=e, countdown=5)

@@ -1,5 +1,6 @@
 from django.test import TestCase
-from .factories import UserFactory, ShoppingListFactory, ShoppingItemFactory
+
+from .factories import ShoppingItemFactory, ShoppingListFactory, UserFactory
 
 
 class ShoppingListModelTest(TestCase):

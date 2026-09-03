@@ -1,13 +1,15 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
-from trips.models import TripMember
+
 from shopping_list.models import ShoppingItem
+from trips.models import TripMember
+
 from .factories import (
-    UserFactory,
-    TripFactory,
-    ShoppingListFactory,
     ShoppingItemFactory,
+    ShoppingListFactory,
+    TripFactory,
+    UserFactory,
 )
 
 

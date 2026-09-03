@@ -1,10 +1,11 @@
 from django.urls import path
+
 from .views import (
-    NoteListView,
     NoteCreateView,
-    NoteDetailView,
-    NoteUpdateView,
     NoteDeleteView,
+    NoteDetailView,
+    NoteListView,
+    NoteUpdateView,
 )
 
 urlpatterns = [

@@ -1,7 +1,8 @@
 from django.contrib import messages
-from django.shortcuts import redirect, get_object_or_404
-from django.views import View
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import get_object_or_404, redirect
+from django.views import View
+
 from ..models import Trip, TripInvite
 
 
@@ -19,7 +20,7 @@ class TripJoinByLinkView(LoginRequiredMixin, View):
             )
             return redirect("trip-detail", pk=trip.pk)
 
-        invite, created = TripInvite.objects.get_or_create(
+        invite, _created = TripInvite.objects.get_or_create(
             trip=trip,
             user=request.user,
             defaults={"invited_by": trip.owner, "status": "pending"},

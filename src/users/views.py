@@ -1,30 +1,32 @@
 from urllib.parse import urlencode
-from django.shortcuts import redirect
-from django.utils import timezone
+
 from django.conf import settings
 from django.contrib import messages
-from django.urls import reverse_lazy, reverse
-from django.views.generic import CreateView, UpdateView, ListView, View
-from django.contrib.auth.views import PasswordResetView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .forms import UserRegistrationForm, UserUpdateForm, CustomPasswordResetForm
-from .models import CustomUser
-from trips.models import Trip, TripInvite
-from packing_lists.models import PackingList
-from notes.models import Note
-from django.db.models import Q
-
 from django.contrib.auth.tokens import default_token_generator  # generowanie tokenu
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.sites.shortcuts import get_current_site
+from django.db.models import Q
+from django.shortcuts import redirect
+from django.urls import reverse, reverse_lazy
+from django.utils import timezone
 from django.utils.encoding import (
     force_bytes,
     force_str,
 )  # force_bytes() zamienia cokolwiek (tu: liczbę) na bytes. 42 → b'42'
 from django.utils.http import (
-    urlsafe_base64_encode,
-    urlsafe_base64_decode,
     url_has_allowed_host_and_scheme,
+    urlsafe_base64_decode,
+    urlsafe_base64_encode,
 )
-from django.contrib.sites.shortcuts import get_current_site
+from django.views.generic import CreateView, ListView, UpdateView, View
+
+from notes.models import Note
+from packing_lists.models import PackingList
+from trips.models import Trip, TripInvite
+
+from .forms import CustomPasswordResetForm, UserRegistrationForm, UserUpdateForm
+from .models import CustomUser
 from .tasks import send_activation_email, send_activation_email_async
 
 

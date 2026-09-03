@@ -1,9 +1,11 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
-from trips.models import TripMember
+
 from packing_lists.models import PackingItem
-from .factories import UserFactory, TripFactory, PackingListFactory, PackingItemFactory
+from trips.models import TripMember
+
+from .factories import PackingItemFactory, PackingListFactory, TripFactory, UserFactory
 
 
 class PackingItemCreateViewTest(TestCase):

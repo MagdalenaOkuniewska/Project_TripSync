@@ -1,15 +1,18 @@
-from django.contrib.auth.decorators import login_required
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse
 import json
-from django.urls import reverse_lazy
-from django.db.models import Q
+
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.shortcuts import redirect, get_object_or_404
-from django.views.generic import DeleteView, DetailView, View, ListView
-from ..models import PackingList, PackingListTemplate, PackingItemTemplate, PackingItem
+from django.db.models import Q
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
+from django.views.decorators.http import require_POST
+from django.views.generic import DeleteView, DetailView, ListView, View
+
 from trips.models import Trip
+
+from ..models import PackingItem, PackingItemTemplate, PackingList, PackingListTemplate
 
 
 def user_can_access_trip(user, trip):
@@ -243,5 +246,5 @@ def toggle_item_packed(request, item_id):
 
     except PackingItem.DoesNotExist:
         return JsonResponse({"success": False, "error": "Item not found"}, status=404)
-    except Exception as e:
+    except Exception as e:  # noqa: BLE001
         return JsonResponse({"success": False, "error": str(e)}, status=500)

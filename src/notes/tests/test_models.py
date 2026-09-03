@@ -1,6 +1,8 @@
 from django.test import TestCase
+
 from trips.models import TripMember
-from .factories import UserFactory, TripFactory, NoteFactory
+
+from .factories import NoteFactory, TripFactory, UserFactory
 
 
 class NoteModelTest(TestCase):

@@ -1,8 +1,9 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
+
 from ...models import Trip
-from ..factories import UserFactory, TripFactory
+from ..factories import TripFactory, UserFactory
 
 
 class TripDeleteViewTest(TestCase):

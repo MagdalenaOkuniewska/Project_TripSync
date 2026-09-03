@@ -1,8 +1,10 @@
-import factory
 from datetime import date
+
+import factory
 from django.contrib.auth import get_user_model
+
+from shopping_list.models import ShoppingItem, ShoppingList
 from trips.models import Trip
-from shopping_list.models import ShoppingList, ShoppingItem
 
 User = get_user_model()
 

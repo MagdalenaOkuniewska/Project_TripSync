@@ -1,9 +1,10 @@
+from django.contrib.messages import get_messages
 from django.test import TestCase
 from django.urls import reverse
-from django.contrib.messages import get_messages
+
 from ...forms import TripForm
 from ...models import Trip, TripMember
-from ..factories import UserFactory, TripFactory
+from ..factories import UserFactory
 
 
 class TripCreateViewTest(TestCase):

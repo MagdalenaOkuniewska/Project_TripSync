@@ -1,5 +1,6 @@
 from django.contrib import admin
-from .models import PackingList, PackingListTemplate, PackingItem, PackingItemTemplate
+
+from .models import PackingItem, PackingItemTemplate, PackingList, PackingListTemplate
 
 
 @admin.register(PackingListTemplate)
